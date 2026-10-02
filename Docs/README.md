@@ -18,7 +18,7 @@
 - [Community](Introduction/Community.md)
 - [System Requirements](Introduction/System-Requirements.md)
 - [Installation](Introduction/Installation.md)
-- [Changelog](../CHANGELOG.md) :link:
+- [Changelog](../NGCHANGELOG.md) :link:
 
 ## [Usage](Usage/README.md)
 - [First Start](Usage/First-Start.md)
