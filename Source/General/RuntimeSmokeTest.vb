@@ -7,6 +7,14 @@ Public Class RuntimeSmokeTest
         Dim output = IO.Path.Combine(Folder.Startup, "net10-smoke-test.txt")
         Try
             If Environment.Version.Major <> 10 Then Throw New Exception("Not running on .NET 10.")
+            If TextEncoding.CodePageOfProcess <> 65001 Then Throw New Exception("The UTF-8 process manifest is not active.")
+            Dim scriptEncodingFile = IO.Path.Combine(Folder.Startup, "smoke-encoding.avs")
+            Dim scriptEncodingText = "LWLibavVideoSource(""Wahre Lügen – 日本語.mkv"")"
+            scriptEncodingText.WriteFileProcessEncoding(scriptEncodingFile)
+            Dim strictUtf8 As New UTF8Encoding(False, True)
+            If IO.File.ReadAllText(scriptEncodingFile, strictUtf8) <> scriptEncodingText Then Throw New Exception("Generated AviSynth script is not valid UTF-8.")
+            If scriptEncodingFile.ReadAllTextDefault() <> scriptEncodingText Then Throw New Exception("Script editor encoding roundtrip failed.")
+            IO.File.Delete(scriptEncodingFile)
             Dim icon = My.Resources.Black
             If icon Is Nothing Then Throw New Exception("Embedded icon is missing.")
             Dim formatter = SerializationCompatibility.CreateFormatter()

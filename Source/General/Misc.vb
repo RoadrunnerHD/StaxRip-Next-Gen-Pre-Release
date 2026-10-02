@@ -4523,7 +4523,13 @@ Public Interface IUpdateUI
 End Interface
 
 Public Class TextEncoding
-    Shared Property EncodingOfProcess As Encoding = Encoding.GetEncoding(Registry.LocalMachine.GetString("SYSTEM\CurrentControlSet\Control\Nls\CodePage", "ACP").ToInt)
+    ' The application manifest selects UTF-8 for this process even when the
+    ' Windows system ACP remains 1252. Query the active process code page.
+    <System.Runtime.InteropServices.DllImport("kernel32.dll", ExactSpelling:=True)>
+    Private Shared Function GetACP() As UInteger
+    End Function
+
+    Shared Property EncodingOfProcess As Encoding = Encoding.GetEncoding(CInt(GetACP()))
     Shared Property CodePageOfProcess As Integer = EncodingOfProcess.CodePage
     Shared Property CodePageOfSystem As Integer = Registry.LocalMachine.GetString("SYSTEM\CurrentControlSet\Control\Nls\CodePage", "ACP").ToInt
     Shared Property EncodingOfSystem As Encoding = Encoding.GetEncoding(CodePageOfSystem)
