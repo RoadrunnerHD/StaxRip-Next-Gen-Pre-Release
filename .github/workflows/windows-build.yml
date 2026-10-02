@@ -1,0 +1,25 @@
+name: StaxRip Next Gen Pre-Release Windows build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-2022
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+      - uses: microsoft/setup-msbuild@v3
+      - name: Build FrameServer and publish with bundled .NET 10 runtime
+        shell: pwsh
+        run: ./Build-NG.ps1
+      - name: Upload complete self-contained build outputs for testing
+        uses: actions/upload-artifact@v6
+        with:
+          name: StaxRip-Next-Gen-Pre-Release-build-outputs
+          path: Source/publish-net10/**
+          if-no-files-found: error
