@@ -6,7 +6,7 @@ StaxRip Next Gen is a portable Windows application for hardware video encoding, 
 
 ### Hardware video encoding
 
-- **Intel Quick Sync:** QSVEncC by Rigaya.
+- **Intel Quick Sync:** QSVEncC.
 - **NVIDIA:** NVEncC.
 - **AMD:** VCEEncC.
 - Encoder-specific quality, bitrate, bit depth and GOP settings.

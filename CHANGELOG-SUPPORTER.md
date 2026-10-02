@@ -6,7 +6,7 @@ The current NG pre-release combines hardware video encoding with video processin
 
 | Area | What is available |
 | --- | --- |
-| Intel | Quick Sync hardware encoding through Rigaya QSVEncC |
+| Intel | Quick Sync hardware encoding through QSVEncC |
 | NVIDIA | Hardware encoding through NVEncC |
 | AMD | Hardware encoding through VCEEncC |
 | Encoding controls | Encoder-specific quality, bitrate, bit depth and GOP settings |
