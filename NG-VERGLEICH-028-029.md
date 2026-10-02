@@ -1,3 +1,11 @@
+# Historischer Archivvergleich — NG 0.28 und 0.29
+
+> Dieser Bericht beschreibt ausschließlich den damaligen Vergleich der Versionen 0.28 und 0.29 und die geplanten Korrekturen für 0.30. Die dort genannten Fehler, Dateizahlen, Größen und Tool-Versionen sind historische Befunde und keine Aussage über das aktuelle Pre-Release.
+>
+> Die Änderungen des aktuellen NG-Releases stehen in [NGCHANGELOG.md](NGCHANGELOG.md), die aktuellen Funktionen in [README.md](README.md).
+
+---
+
 # Vergleich 0.28 → 0.29 und Korrekturen für 0.30
 
 Die beiden vollständigen vierteiligen Programmarchive wurden zusammengesetzt und mit dem Archiv-CRC-Test geprüft (beide ohne Archivfehler). Jeder Dateieintrag ist in `Docs/Comparison/dateien-028-029.csv` mit Größe, CRC32 und Änderungszeit aufgeführt. Die 0.29-Archivdatei ist technisch lesbar, enthält jedoch fehlerhafte Programminhalte.

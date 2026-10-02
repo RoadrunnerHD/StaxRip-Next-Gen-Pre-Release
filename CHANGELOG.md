@@ -1,4 +1,12 @@
-﻿<!--
+# Original StaxRip changelog — historical archive
+
+> This file preserves historical release notes from the original StaxRip project. It does not describe the current StaxRip Next Gen release or list its included encoders. References to x264, x265 and other software video encoders belong to that history; software video encoders have been removed from NG.
+>
+> For StaxRip Next Gen changes, see [NGCHANGELOG.md](NGCHANGELOG.md). For current capabilities, see [README.md](README.md).
+
+---
+
+<!--
 v2.5x.0 (not published yet)
 ====================
 
