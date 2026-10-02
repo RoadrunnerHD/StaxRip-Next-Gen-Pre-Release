@@ -30,6 +30,7 @@ Public Class Proc
     Property TrimChars As Char()
     Property Wait As Boolean
 
+    Private EncoderDisplayCommand As String
     Private LogItems As List(Of String)
 
     Event ProcDisposed()
@@ -141,13 +142,14 @@ Public Class Proc
             Return Process.StartInfo.FileName
         End Get
         Set(Value As String)
+            EncoderDisplayCommand = Nothing
             Process.StartInfo.FileName = If(Value?.Contains("%"), Environment.ExpandEnvironmentVariables(Value), Value)
         End Set
     End Property
 
     Property CommandLine() As String
         Get
-            Return File.Escape + " " + Arguments
+            Return If(EncoderDisplayCommand, File.Escape + " " + Arguments)
         End Get
         Set(Value As String)
             Try
@@ -165,6 +167,7 @@ Public Class Proc
             Return Process.StartInfo.Arguments
         End Get
         Set(Value As String)
+            EncoderDisplayCommand = Nothing
             Process.StartInfo.Arguments = Value
 
             If Process.StartInfo.Arguments.Contains("\""") Then
@@ -182,6 +185,7 @@ Public Class Proc
         ' this command through Arguments, which expands environment variables.
         File = "cmd.exe"
         Process.StartInfo.Arguments = EncoderShellCommand.Prepare(command, Process.StartInfo.Environment)
+        EncoderDisplayCommand = command
     End Sub
 
     WriteOnly Property Encoding As Encoding
@@ -268,7 +272,9 @@ Public Class Proc
             End If
 
             If ReadOutput Then
-                If File = "cmd.exe" AndAlso Arguments.StartsWithEx("/S /C """) AndAlso Arguments.EndsWithEx("""") Then
+                If EncoderDisplayCommand IsNot Nothing Then
+                    Log.WriteLine(EncoderDisplayCommand + BR2)
+                ElseIf File = "cmd.exe" AndAlso Arguments.StartsWithEx("/S /C """) AndAlso Arguments.EndsWithEx("""") Then
                     Log.WriteLine(Arguments.Substring(7, Arguments.Length - 8) + BR2)
                 Else
                     Log.WriteLine(CommandLine + BR2)

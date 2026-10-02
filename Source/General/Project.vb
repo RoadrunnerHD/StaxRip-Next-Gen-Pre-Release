@@ -191,6 +191,21 @@ Public Class Project
             PreferredAudio = If(Language.CurrentCulture.TwoLetterCode = "en", "eng und all", Language.CurrentCulture.ThreeLetterCode + " eng und all")
         End If
 
+        ' Repair templates created when LF-only embedded profiles were not parsed.
+        ' Keep valid custom filters and restore only a missing source placeholder.
+        If Script IsNot Nothing Then
+            If Script.Filters Is Nothing Then Script.Filters = New List(Of VideoFilter)
+            If Script.Filters.Count = 0 OrElse Script.Filters(0) Is Nothing Then
+                Dim source = New VideoFilter("Source", "Automatic", "# can be configured at: Tools > Settings > Source Filters")
+                If Script.Filters.Count = 0 Then
+                    Script.Filters.Add(source)
+                Else
+                    Script.Filters(0) = source
+                End If
+            End If
+            Script.Filters.RemoveAll(Function(filter) filter Is Nothing)
+        End If
+
         If SourceScript Is Nothing Then SourceScript = New SourceVideoScript
         If SkippedAssistantTips Is Nothing Then SkippedAssistantTips = New List(Of String)
         If SourceFiles Is Nothing Then SourceFiles = New List(Of String)

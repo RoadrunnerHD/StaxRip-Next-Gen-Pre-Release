@@ -17,6 +17,27 @@ Public Class RuntimeSmokeTest
             If IO.File.ReadAllText(scriptEncodingFile, strictUtf8) <> scriptEncodingText Then Throw New Exception("Generated AviSynth script is not valid UTF-8.")
             If scriptEncodingFile.ReadAllTextDefault() <> scriptEncodingText Then Throw New Exception("Script editor encoding roundtrip failed.")
             IO.File.Delete(scriptEncodingFile)
+            For Each engine In {ScriptEngine.AviSynth, ScriptEngine.VapourSynth}
+                For Each name In {"Automatic", "Manual"}
+                    If VideoFilter.GetDefault("Source", name, engine) Is Nothing Then Throw New Exception("Embedded source filter is missing: " & engine.ToString() & "/" & name)
+                Next
+            Next
+            For Each separator In {Microsoft.VisualBasic.Constants.vbCrLf, Microsoft.VisualBasic.Constants.vbLf, Microsoft.VisualBasic.Constants.vbCr}
+                Dim profiles = FilterCategory.ParseFilterProfilesIniContent(String.Join(separator, {"[Source]", "Automatic = # automatic", "Manual = # manual"}))
+                If profiles.Count <> 1 OrElse profiles(0).Filters.Count <> 2 Then Throw New Exception("Filter profile line-ending compatibility failed.")
+            Next
+            Dim damagedProject As New Project With {.Script = VideoScript.GetDefaults()(1)}
+            damagedProject.Script.Filters(0) = Nothing
+            damagedProject.Init()
+            If damagedProject.Script.Filters(0) Is Nothing OrElse damagedProject.Script.Filters(0).Name <> "Automatic" Then Throw New Exception("Missing startup source filter recovery failed.")
+            Using encoderProc As New Proc()
+                Dim displayCommand = "QSVEncC64.exe -i ""C:\test %PATH% ! & source.mkv"" -o ""C:\output.hevc"""
+                encoderProc.SetEncoderCommandLine(displayCommand)
+                If encoderProc.CommandLine <> displayCommand Then Throw New Exception("Readable encoder command display failed.")
+                If Not encoderProc.Process.StartInfo.Arguments.Contains("STAXRIP_LITERAL_") Then Throw New Exception("Safe encoder argument transport was lost.")
+                encoderProc.Arguments = "--help"
+                If encoderProc.CommandLine = displayCommand Then Throw New Exception("Stale encoder command display after argument change.")
+            End Using
             Dim icon = My.Resources.Black
             If icon Is Nothing Then Throw New Exception("Embedded icon is missing.")
             Dim formatter = SerializationCompatibility.CreateFormatter()

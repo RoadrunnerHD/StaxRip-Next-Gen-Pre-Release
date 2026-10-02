@@ -1239,18 +1239,35 @@ End Enum
 Public Class Startup
     <STAThread()>
     Shared Sub Main()
-        Application.SetHighDpiMode(HighDpiMode.PerMonitorV2)
-        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance)
-        If Environment.GetCommandLineArgs().Contains("--net10-smoke-test") Then
-            RuntimeSmokeTest.Run()
-            Return
-        End If
-        AddHandler AppDomain.CurrentDomain.UnhandledException, AddressOf g.OnUnhandledException
-        Application.EnableVisualStyles()
-        Application.SetCompatibleTextRenderingDefault(False)
-        Dim loadSettings = g.SettingsFile.FileExists()
-        If loadSettings Then g.LoadSettings()
-        Application.Run(New MainForm(Not loadSettings))
+        Try
+            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2)
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance)
+            If Environment.GetCommandLineArgs().Contains("--net10-smoke-test") Then
+                RuntimeSmokeTest.Run()
+                Return
+            End If
+            AddHandler AppDomain.CurrentDomain.UnhandledException, AddressOf g.OnUnhandledException
+            Application.EnableVisualStyles()
+            Application.SetCompatibleTextRenderingDefault(False)
+            Dim loadSettings = g.SettingsFile.FileExists()
+            If loadSettings Then g.LoadSettings()
+            Application.Run(New MainForm(Not loadSettings))
+        Catch ex As Exception
+            WriteStartupFailure(ex)
+            MessageBox.Show(ex.ToString(), "StaxRip startup error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Sub
+
+    Friend Shared Sub WriteStartupFailure(ex As Exception)
+        ' Record the exception before the normal handler touches MainForm,
+        ' project settings or logs that may not exist during startup.
+        Try
+            Dim root = Environment.GetEnvironmentVariable("STAXRIP_PORTABLE_ROOT")
+            If String.IsNullOrWhiteSpace(root) Then root = AppContext.BaseDirectory
+            File.WriteAllText(Path.Combine(root, "startup-error.txt"), ex.ToString(), New UTF8Encoding(False))
+        Catch
+            ' Do not hide the original error if this directory is read-only.
+        End Try
     End Sub
 End Class
 

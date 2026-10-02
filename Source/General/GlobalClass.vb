@@ -127,6 +127,7 @@ Public Class GlobalClass
                 mutex.ReleaseMutex()
             End Using
         Catch ex As Exception
+            Startup.WriteStartupFailure(ex)
             Using td As New TaskDialog(Of String)
                 td.Title = "The settings failed to load!"
                 td.Content = ex.Message
@@ -188,6 +189,7 @@ Public Class GlobalClass
 
             s.AudioProfiles = audioProfiles
         Catch ex As Exception
+            Startup.WriteStartupFailure(ex)
             Using td As New TaskDialog(Of String)
                 td.Title = "Audio Profiles file failed to load!"
                 td.Content = ex.Message
@@ -244,6 +246,7 @@ Public Class GlobalClass
             s.VideoEncoderProfiles = If(videoEncoderProfiles, VideoEncoder.GetDefaults()).
                 Where(Function(encoder) encoder IsNot Nothing AndAlso VideoEncoder.IsAvailable(encoder)).ToList()
         Catch ex As Exception
+            Startup.WriteStartupFailure(ex)
             Using td As New TaskDialog(Of String)
                 td.Title = "Video Encoder Profiles file failed to load!"
                 td.Content = ex.Message
@@ -299,6 +302,7 @@ Public Class GlobalClass
 
             s.EventCommands = events
         Catch ex As Exception
+            Startup.WriteStartupFailure(ex)
             Using td As New TaskDialog(Of String)
                 td.Title = "Events file failed to load!"
                 td.Content = ex.Message
@@ -1581,6 +1585,7 @@ Public Class GlobalClass
     Private ExceptionHandled As Boolean
 
     Sub OnException(ex As Exception)
+        Startup.WriteStartupFailure(ex)
         If ExceptionHandled Then Exit Sub
 
         ExceptionHandled = True

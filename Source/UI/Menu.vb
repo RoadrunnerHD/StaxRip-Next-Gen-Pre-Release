@@ -707,7 +707,7 @@ Namespace UI
             ret.Items.ClearAndDisplose
 
             If Not String.IsNullOrWhiteSpace(definition) Then
-                For Each i In definition.SplitKeepEmpty(BR)
+                For Each i In definition.FixBreak().SplitKeepEmpty(BR)
                     If i.Contains("=") Then
                         Dim arg = i.Right("=").Trim
                         MenuItemEx.Add(ret.Items, i.Left("=").Trim, action, arg, Nothing)

@@ -71,59 +71,68 @@ Module FileSafetyTests
     End Function
 
     Private Async Function DownloadTest(root As String, mode As String) As Task
+        Using certificate = CreateServerCertificate()
+            Dim path = IO.Path.Combine(root, mode & ".bin")
+            File.WriteAllText(path, "previous download")
+            Dim listener As New TcpListener(IPAddress.Loopback, 0)
+            listener.Start()
+            Dim port = DirectCast(listener.LocalEndpoint, IPEndPoint).Port
+            Using cancellation As New CancellationTokenSource()
+                Dim server = Task.Run(Async Function()
+                    Using connection = Await listener.AcceptTcpClientAsync()
+                        Using stream As New SslStream(connection.GetStream())
+                            Await stream.AuthenticateAsServerAsync(certificate, False, SslProtocols.Tls12, False)
+                            Using reader As New StreamReader(stream, Encoding.ASCII, False, 1024, True)
+                                While Not String.IsNullOrEmpty(Await reader.ReadLineAsync())
+                                End While
+                            End Using
+                            Dim length = If(mode = "success", 3, 100)
+                            Dim response = Encoding.ASCII.GetBytes("HTTP/1.1 200 OK" & vbCrLf & "Content-Length: " & length & vbCrLf & "Connection: close" & vbCrLf & vbCrLf & "new")
+                            Await stream.WriteAsync(response.AsMemory())
+                            If mode = "cancel" Then
+                                ' Cancel after the downloader has actually received bytes.
+                                Await Task.Delay(5000, cancellation.Token)
+                            End If
+                        End Using
+                    End Using
+                End Function)
+                Dim progress As IProgress(Of (Received As Long, Total As Long?)) =
+                    New InlineProgress(Sub(value)
+                        If mode = "cancel" Then cancellation.Cancel()
+                    End Sub)
+                Dim failed = False
+                Try
+                    Using handler As New HttpClientHandler With {.AllowAutoRedirect = False}
+                        ' Trust only this test's generated local server certificate.
+                        handler.ServerCertificateCustomValidationCallback = Function(request, remote, chain, errors) remote.GetCertHashString() = certificate.GetCertHashString()
+                        Using client As New HttpClient(handler)
+                            Await HttpFileDownload.DownloadAsync(client, "https://localhost:" & port & "/file", path, progress, cancellation.Token)
+                        End Using
+                    End Using
+                Catch ex As Exception When TypeOf ex Is IOException OrElse TypeOf ex Is OperationCanceledException OrElse TypeOf ex Is Net.Http.HttpRequestException
+                    failed = True
+                Finally
+                    listener.Stop()
+                End Try
+                Try
+                    Await server
+                Catch ex As OperationCanceledException
+                End Try
+                Require(failed = (mode <> "success"), "Unexpected download outcome: " & mode)
+                Require(File.ReadAllText(path) = If(mode = "success", "new", "previous download"), "Download damaged existing file: " & mode)
+                Require(Directory.GetFiles(root, "*.part").Length = 0, "Temporary downloads must be cleaned up.")
+            End Using
+        End Using
+    End Function
+
+    Private Function CreateServerCertificate() As X509Certificate2
         Using key = RSA.Create(2048)
-            Dim certificateRequest As New CertificateRequest("CN=localhost", key, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1)
-            Using certificate = certificateRequest.CreateSelfSigned(DateTimeOffset.UtcNow.AddMinutes(-1), DateTimeOffset.UtcNow.AddHours(1))
-                Dim path = IO.Path.Combine(root, mode & ".bin")
-                File.WriteAllText(path, "previous download")
-                Dim listener As New TcpListener(IPAddress.Loopback, 0)
-                listener.Start()
-                Dim port = DirectCast(listener.LocalEndpoint, IPEndPoint).Port
-                Using cancellation As New CancellationTokenSource()
-                    Dim server = Task.Run(Async Function()
-                        Using connection = Await listener.AcceptTcpClientAsync()
-                            Using stream As New SslStream(connection.GetStream())
-                                Await stream.AuthenticateAsServerAsync(certificate, False, SslProtocols.Tls12, False)
-                                Using reader As New StreamReader(stream, Encoding.ASCII, False, 1024, True)
-                                    While Not String.IsNullOrEmpty(Await reader.ReadLineAsync())
-                                    End While
-                                End Using
-                                Dim length = If(mode = "success", 3, 100)
-                                Dim response = Encoding.ASCII.GetBytes("HTTP/1.1 200 OK" & vbCrLf & "Content-Length: " & length & vbCrLf & "Connection: close" & vbCrLf & vbCrLf & "new")
-                                Await stream.WriteAsync(response.AsMemory())
-                                If mode = "cancel" Then
-                                    ' Cancel after the downloader has actually received bytes.
-                                    Await Task.Delay(5000, cancellation.Token)
-                                End If
-                            End Using
-                        End Using
-                    End Function)
-                    Dim progress As IProgress(Of (Received As Long, Total As Long?)) =
-                        New InlineProgress(Sub(value)
-                            If mode = "cancel" Then cancellation.Cancel()
-                        End Sub)
-                    Dim failed = False
-                    Try
-                        Using handler As New HttpClientHandler With {.AllowAutoRedirect = False}
-                            ' Trust only this test's ephemeral local server certificate.
-                            handler.ServerCertificateCustomValidationCallback = Function(request, remote, chain, errors) remote.GetCertHashString() = certificate.GetCertHashString()
-                            Using client As New HttpClient(handler)
-                                Await HttpFileDownload.DownloadAsync(client, "https://localhost:" & port & "/file", path, progress, cancellation.Token)
-                            End Using
-                        End Using
-                    Catch ex As Exception When TypeOf ex Is IOException OrElse TypeOf ex Is OperationCanceledException OrElse TypeOf ex Is Net.Http.HttpRequestException
-                        failed = True
-                    Finally
-                        listener.Stop()
-                    End Try
-                    Try
-                        Await server
-                    Catch ex As OperationCanceledException
-                    End Try
-                    Require(failed = (mode <> "success"), "Unexpected download outcome: " & mode)
-                    Require(File.ReadAllText(path) = If(mode = "success", "new", "previous download"), "Download damaged existing file: " & mode)
-                    Require(Directory.GetFiles(root, "*.part").Length = 0, "Temporary downloads must be cleaned up.")
-                End Using
+            Dim request As New CertificateRequest("CN=localhost", key, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1)
+            Using generated = request.CreateSelfSigned(DateTimeOffset.UtcNow.AddMinutes(-1), DateTimeOffset.UtcNow.AddHours(1))
+                ' Windows Schannel cannot use the ephemeral CNG key returned
+                ' by CreateSelfSigned. Import a temporary user-key PFX instead.
+                ' Do not use PersistKeySet: disposal must release the test key.
+                Return X509CertificateLoader.LoadPkcs12(generated.Export(X509ContentType.Pkcs12, ""), "", X509KeyStorageFlags.UserKeySet)
             End Using
         End Using
     End Function

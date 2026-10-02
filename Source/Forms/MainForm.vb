@@ -986,6 +986,7 @@ Partial Public Class MainForm
     Private BlockSourceTextBoxTextChanged As Boolean
     Private AssistantClickAction As Action
     Private ThemeRefresh As Boolean
+    Private RecoveringProject As Boolean
     Private Const TrackBarInterval As Integer = 16
     Private Const TrackBarTicks As Integer = 4
 
@@ -1761,7 +1762,7 @@ Partial Public Class MainForm
 
             Return OpenProject(p, path)
         Catch ex As Exception
-            OpenProject(g.StartupTemplatePath)
+            Return RecoverProjectLoad(ex)
         End Try
         Return False
     End Function
@@ -1872,11 +1873,26 @@ Partial Public Class MainForm
 
             Return True
         Catch ex As Exception
-            OpenProject(g.StartupTemplatePath)
+            Return RecoverProjectLoad(ex)
         Finally
             SkipAssistant = False
         End Try
         Return False
+    End Function
+
+    Private Function RecoverProjectLoad(loadError As Exception) As Boolean
+        Startup.WriteStartupFailure(loadError)
+        ' The startup template cannot recover from its own initialization
+        ' failure. Keep the original exception instead of overflowing the stack.
+        If IsLoading OrElse RecoveringProject Then
+            Throw New InvalidOperationException("The startup project could not be initialized.", loadError)
+        End If
+        RecoveringProject = True
+        Try
+            Return OpenProject(g.StartupTemplatePath, False)
+        Finally
+            RecoveringProject = False
+        End Try
     End Function
 
     Sub SetSlider()
