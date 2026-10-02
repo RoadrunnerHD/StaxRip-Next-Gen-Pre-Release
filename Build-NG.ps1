@@ -1,4 +1,8 @@
-$ErrorActionPreference = 'Stop'
+﻿$ErrorActionPreference = 'Stop'
+& dotnet run --project (Join-Path $PSScriptRoot 'Tests\SerializationSafety.Tests.vbproj') --configuration Release
+if ($LASTEXITCODE -ne 0) { throw 'Serialization safety tests failed.' }
+& dotnet run --project (Join-Path $PSScriptRoot 'Tests\FileSafety.Tests.vbproj') --configuration Release
+if ($LASTEXITCODE -ne 0) { throw 'File safety tests failed.' }
 & dotnet run --project (Join-Path $PSScriptRoot 'Tests\QsvColorMetadata.Tests.vbproj') --configuration Release
 if ($LASTEXITCODE -ne 0) { throw 'QSV color metadata regression tests failed.' }
 $source = Join-Path $PSScriptRoot 'Source'

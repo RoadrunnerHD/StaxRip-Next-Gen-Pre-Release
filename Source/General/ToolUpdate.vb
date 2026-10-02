@@ -22,26 +22,30 @@ Public Class ToolUpdate
     End Sub
 
     Async Sub Update()
-        Dim content = Await HttpClient.GetStringAsync(Package.DownloadURL)
-        Dim matches = Regex.Matches(content, "href=(""|')[^ ]+\.(7z|zip|exe)(""|')")
+        Try
+            Dim content = Await HttpClient.GetStringAsync(Package.DownloadURL)
+            Dim matches = Regex.Matches(content, "href=(""|')[^ ]+\.(7z|zip|exe)(""|')")
 
-        For Each match As Match In matches
-            Dim url = match.Value
+            For Each match As Match In matches
+                Dim url = match.Value
 
-            If Ignore(url) Then Continue For
-            If Package.Include <> "" AndAlso Not url.Contains(Package.Include) Then Continue For
+                If Ignore(url) Then Continue For
+                If Package.Include <> "" AndAlso Not url.Contains(Package.Include) Then Continue For
 
-            url = url.Substring(6, url.Length - 7)
+                url = url.Substring(6, url.Length - 7)
 
-            If Not url.StartsWith("http") Then
-                Dim match2 = Regex.Match(Package.DownloadURL, "https?://[^/]+")
-                url = match2.Value + If(url.StartsWith("/"), "", "/") + url
-            End If
+                If Not url.StartsWith("http") Then
+                    Dim match2 = Regex.Match(Package.DownloadURL, "https?://[^/]+")
+                    url = match2.Value + If(url.StartsWith("/"), "", "/") + url
+                End If
 
-            DownloadFile = IO.Path.Combine(Folder.Desktop, IO.Path.GetFileName(url))
-            Download(url)
-            Exit For
-        Next
+                DownloadFile = IO.Path.Combine(Folder.Desktop, IO.Path.GetFileName(url))
+                Download(url)
+                Exit For
+            Next
+        Catch ex As Exception
+            g.ShowException(ex)
+        End Try
     End Sub
 
     Sub Download(url As String)
@@ -58,7 +62,6 @@ Public Class ToolUpdate
                         MsgError("Downloaded file is missing.")
                     End If
                 Else
-                    FileHelp.Delete(DownloadFile)
                     MsgInfo("Download was canceled or failed.")
                 End If
             End Using
@@ -70,118 +73,88 @@ Public Class ToolUpdate
             Exit Sub
         End If
 
-        ExtractDir = Path.Combine(DownloadFile.Dir, DownloadFile.Base)
+        Dim stagingRoot = Path.Combine(Path.GetTempPath(), "StaxRip-update-" & Guid.NewGuid().ToString("N"))
+        ExtractDir = stagingRoot
+        Try
 
-        Using pr As New Process
-            pr.StartInfo.FileName = Package.SevenZip.Path
-            pr.StartInfo.Arguments = "x -y " + DownloadFile.Escape + " -o""" + ExtractDir + """"
-            pr.StartInfo.UseShellExecute = False
-            pr.Start()
-            pr.WaitForExit()
+            Using pr As New Process
+                pr.StartInfo.FileName = Package.SevenZip.Path
+                pr.StartInfo.Arguments = "x -y " + DownloadFile.Escape + " -o""" + ExtractDir + """"
+                pr.StartInfo.UseShellExecute = False
+                pr.Start()
+                pr.WaitForExit()
 
-            If pr.ExitCode <> 0 Then
+                If pr.ExitCode <> 0 Then
+                    UpdatePackageDialog()
+                    MsgError("Extraction failed with error exit code " & pr.ExitCode)
+                    Exit Sub
+                End If
+            End Using
+
+            If Not File.Exists(Path.Combine(ExtractDir, Package.Filename)) Then
+                Dim subDirs As New List(Of String)
+
+                For Each subDir In Directory.GetDirectories(ExtractDir, "*", SearchOption.AllDirectories)
+                    If (Path.Combine(subDir, Package.Filename)).FileExists AndAlso Not Ignore(subDir) Then
+                        subDirs.Add(subDir)
+                    End If
+                Next
+
+                If subDirs.Count > 1 Then
+                    UpdatePackageDialog()
+
+                    Using td As New TaskDialog(Of String)
+                        td.Title = "Choose subfolder to extract."
+
+                        For Each subDir In subDirs
+                            Dim name = subDir.Replace(ExtractDir, "").TrimEnd(Path.DirectorySeparatorChar)
+                            td.AddCommand(name, subDir)
+                        Next
+
+                        If td.Show.DirExists Then
+                            ExtractDir = td.SelectedValue
+                        End If
+                    End Using
+                ElseIf subDirs.Count = 1 Then
+                    ExtractDir = subDirs(0)
+                End If
+            End If
+
+            If Not (Path.Combine(ExtractDir, Package.Filename)).FileExists Then
                 UpdatePackageDialog()
-                MsgError("Extraction failed with error exit code " & pr.ExitCode)
+                MsgError("File missing after extraction.")
                 Exit Sub
             End If
-        End Using
 
-        If Not File.Exists(Path.Combine(ExtractDir, Package.Filename)) Then
-            Dim subDirs As New List(Of String)
-
-            For Each subDir In Directory.GetDirectories(ExtractDir, "*", SearchOption.AllDirectories)
-                If (Path.Combine(subDir, Package.Filename)).FileExists AndAlso Not Ignore(subDir) Then
-                    subDirs.Add(subDir)
-                End If
-            Next
-
-            If subDirs.Count > 1 Then
-                UpdatePackageDialog()
-
-                Using td As New TaskDialog(Of String)
-                    td.Title = "Choose subfolder to extract."
-
-                    For Each subDir In subDirs
-                        Dim name = subDir.Replace(ExtractDir, "").TrimEnd(Path.DirectorySeparatorChar)
-                        td.AddCommand(name, subDir)
-                    Next
-
-                    If td.Show.DirExists Then
-                        ExtractDir = td.SelectedValue
-                    End If
-                End Using
-            ElseIf subDirs.Count = 1 Then
-                ExtractDir = subDirs(0)
-            End If
-        End If
-
-        If Not (Path.Combine(ExtractDir, Package.Filename)).FileExists Then
-            UpdatePackageDialog()
-            MsgError("File missing after extraction.")
-            Exit Sub
-        End If
-
-        DeleteOldFiles()
+            InstallExtractedFiles()
+        Finally
+            Try
+                If Directory.Exists(stagingRoot) Then Directory.Delete(stagingRoot, True)
+            Catch ex As IOException
+            Catch ex As UnauthorizedAccessException
+            End Try
+        End Try
     End Sub
 
-    Sub DeleteOldFiles()
-        Dim entries = Directory.GetFileSystemEntries(TargetDir)
-        entries = entries.Where(Function(item) Not item.FileName.EqualsAny(Package.Keep)).ToArray
-        Dim names = entries.Select(Function(item) item.FileName)
-        Dim list = String.Join(BR, names)
-        UpdatePackageDialog()
-
-        If MsgQuestion("Delete current files?",
-            "Delete current files in:" + BR2 + TargetDir + BR2 + list) = DialogResult.OK Then
-
-            For Each file In Directory.GetFiles(TargetDir)
-                If file.FileName.EqualsAny(Package.Keep) Then
-                    Continue For
-                End If
-
-                FileHelp.Delete(file, FileIO.RecycleOption.SendToRecycleBin)
-            Next
-
-            For Each folder In Directory.GetDirectories(TargetDir)
-                If folder.FileName.EqualsAny(Package.Keep) Then
-                    Continue For
-                End If
-
-                FolderHelp.Delete(folder, FileIO.RecycleOption.SendToRecycleBin)
-            Next
-        Else
-            UpdatePackageDialog()
-            MsgInfo("Update was canceled.")
-            Exit Sub
-        End If
-
-        CopyFiles()
-    End Sub
-
-    Sub CopyFiles()
+    Sub InstallExtractedFiles()
+        ' Ask before changing the installed tool. There must be no second prompt
+        ' after files have already been removed.
         Dim entries = Directory.GetFileSystemEntries(ExtractDir)
-        Dim names = entries.Select(Function(item) item.FileName)
-        Dim list = String.Join(BR, names)
+        Dim list = String.Join(BR, entries.Select(Function(item) item.FileName))
         UpdatePackageDialog()
-
-        If MsgQuestion("Copy new files?",
-            "Copy new files from:" + BR2 + ExtractDir + BR2 + "to:" + BR2 +
-            TargetDir + BR2 + list) = DialogResult.OK Then
-
-            For Each file In Directory.GetFiles(ExtractDir)
-                FileHelp.Copy(file, Path.Combine(TargetDir, file.FileName))
-            Next
-
-            For Each folder In Directory.GetDirectories(ExtractDir)
-                FolderHelp.Copy(folder, Path.Combine(TargetDir, folder.FileName))
-            Next
-        Else
-            UpdatePackageDialog()
+        If MsgQuestion("Install new tool files?",
+            "Replace current files in:" + BR2 + TargetDir + BR2 +
+            "with files from:" + BR2 + ExtractDir + BR2 + list) <> DialogResult.OK Then
             MsgInfo("Update was canceled.")
-            Exit Sub
+            Return
         End If
 
-        FolderHelp.Delete(ExtractDir, FileIO.RecycleOption.SendToRecycleBin)
+        Try
+            ToolDirectoryTransaction.Install(ExtractDir, TargetDir, Package.Keep)
+        Catch ex As Exception
+            g.ShowException(ex)
+            Return
+        End Try
         EditVersion()
     End Sub
 

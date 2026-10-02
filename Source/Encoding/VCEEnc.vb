@@ -185,8 +185,7 @@ Public Class VCEEnc
             proc.Header = "Video encoding"
             proc.Package = Package
             proc.SkipStrings = {"%]", " frames: "}
-            proc.File = "cmd.exe"
-            proc.Arguments = "/S /C """ + Params.GetCommandLine(True, True) + """"
+            proc.SetEncoderCommandLine(Params.GetCommandLine(True, True))
             proc.Start()
         End Using
     End Sub

@@ -309,9 +309,16 @@ Public Class SafeSerialization
 
         Try
             path = path.TrimQuotes().LongPathPrefix()
-            Using fs As New FileStream(path, FileMode.Create)
-                bf.Serialize(fs, list)
-            End Using
+            Dim temporaryPath = path & "." & Guid.NewGuid().ToString("N") & ".tmp"
+            Try
+                Using fs As New FileStream(temporaryPath, FileMode.CreateNew)
+                    bf.Serialize(fs, list)
+                    fs.Flush(True)
+                End Using
+                File.Move(temporaryPath, path, True)
+            Finally
+                If File.Exists(temporaryPath) Then File.Delete(temporaryPath)
+            End Try
         Catch ex As Exception
             g.ShowException(ex)
         End Try
@@ -343,7 +350,7 @@ Public Class SafeSerialization
                                     End If
                                 End If
                             Catch ex As Exception
-                                safeInstance.WasUpdated = True
+                                Throw New SerializationException("Could not restore stored field: " & i.Name, ex)
                             End Try
                         End If
                     End If

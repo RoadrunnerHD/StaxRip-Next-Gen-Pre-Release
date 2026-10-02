@@ -476,7 +476,7 @@ Public Class Theme
 
         Public Function Clone() As ControlsThemeColors
             Using stream As Stream = New MemoryStream()
-                Dim formatter As IFormatter = SerializationCompatibility.CreateFormatter()
+                Dim formatter = SerializationCompatibility.CreateFormatter()
                 formatter.Serialize(stream, Me)
                 stream.Seek(0, SeekOrigin.Begin)
                 Return DirectCast(formatter.Deserialize(stream), ControlsThemeColors)

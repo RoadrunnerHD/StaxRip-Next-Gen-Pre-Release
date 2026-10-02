@@ -177,6 +177,13 @@ Public Class Proc
         End Set
     End Property
 
+    Sub SetEncoderCommandLine(command As String)
+        ' Preserve literal paths through cmd's percent expansion. Do not pass
+        ' this command through Arguments, which expands environment variables.
+        File = "cmd.exe"
+        Process.StartInfo.Arguments = EncoderShellCommand.Prepare(command, Process.StartInfo.Environment)
+    End Sub
+
     WriteOnly Property Encoding As Encoding
         Set(value As Encoding)
             Process.StartInfo.StandardErrorEncoding = value

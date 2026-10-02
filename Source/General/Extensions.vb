@@ -217,7 +217,7 @@ Module StringExtensions
         If instance = "" Then Return ""
         If instance(0) = """" AndAlso instance(instance.Length - 1) = """" Then Return instance
 
-        For Each i In " ;=~*$%()&"
+        For Each i In " ;=~*$%()&!^"
             If instance.Contains(i) Then
                 Return """" + instance + """"
             End If

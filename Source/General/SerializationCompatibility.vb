@@ -4,7 +4,11 @@ Imports System.Runtime.Serialization.Formatters.Binary
 
 ' Central factory for the legacy data format during the runtime migration.
 Public NotInheritable Class SerializationCompatibility
-    Public Shared Function CreateFormatter() As BinaryFormatter
+    Public Shared Function CreateFormatter() As CompatibleDataFormatter
+        Return New CompatibleDataFormatter()
+    End Function
+
+    Friend Shared Function CreateWriter() As BinaryFormatter
         Dim selector As New SurrogateSelector()
         Dim context As New StreamingContext(StreamingContextStates.All)
         Dim culture As New CultureSurrogate()
@@ -18,26 +22,42 @@ Public NotInheritable Class SerializationCompatibility
                 selector.AddSurrogate(calendarType, context, New CalendarSurrogate())
             End If
         Next
-        Return New BinaryFormatter With {.SurrogateSelector = selector, .Context = context, .Binder = New GlobalizationBinder()}
+        Return New BinaryFormatter With {.SurrogateSelector = selector, .Context = context}
     End Function
 
-    ' .NET 10 TextInfo still exposes an obsolete deserialization callback that throws.
-    ' Map legacy auxiliary records to a proxy so callbacks on unsupported BCL objects
-    ' are never registered by BinaryFormatter. Resolve the proxy through public APIs.
-    Private Class GlobalizationBinder
-        Inherits SerializationBinder
-        Public Overrides Function BindToType(assemblyName As String, typeName As String) As Type
-            If typeName = GetType(TextInfo).FullName Then Return GetType(GlobalizationRecord(Of TextInfo))
-            If typeName = GetType(NumberFormatInfo).FullName Then Return GetType(GlobalizationRecord(Of NumberFormatInfo))
-            If typeName = GetType(DateTimeFormatInfo).FullName Then Return GetType(GlobalizationRecord(Of DateTimeFormatInfo))
-            If typeName.StartsWith("System.Globalization.", StringComparison.Ordinal) Then
-                Dim type = GetType(Calendar).Assembly.GetType(typeName)
-                If type IsNot Nothing AndAlso Not type.IsAbstract AndAlso GetType(Calendar).IsAssignableFrom(type) Then Return GetType(GlobalizationRecord(Of )).MakeGenericType(type)
+    Friend Shared Function RestoreGlobalization(type As Type, fields As IDictionary(Of String, Object)) As Object
+        Dim surrogate As ISerializationSurrogate
+        If GetType(CultureInfo).IsAssignableFrom(type) Then
+            surrogate = New CultureSurrogate()
+        ElseIf type Is GetType(TextInfo) Then
+            surrogate = New TextSurrogate()
+        ElseIf GetType(Calendar).IsAssignableFrom(type) Then
+            surrogate = New CalendarSurrogate()
+        ElseIf type Is GetType(CompareInfo) Then
+            Dim name As String = Nothing
+            For Each key In {"Name", "m_name", "m_sortName", "_name", "_sortName"}
+                If fields.ContainsKey(key) AndAlso TypeOf fields(key) Is String Then name = CStr(fields(key)) : Exit For
+            Next
+            If name Is Nothing Then
+                For Each key In {"culture", "m_culture", "m_lcid"}
+                    If fields.ContainsKey(key) Then name = CultureInfo.GetCultureInfo(Convert.ToInt32(fields(key))).Name : Exit For
+                Next
             End If
-            Return Nothing ' Preserve the formatter's normal binding for application and forwarded types.
-        End Function
-    End Class
+            If name Is Nothing Then Throw New SerializationException("Stored comparison has no culture identifier.")
+            Return CultureInfo.GetCultureInfo(name).CompareInfo
+        Else
+            surrogate = New FormatSurrogate()
+        End If
+        Dim info As New SerializationInfo(type, New FormatterConverter())
+        For Each field In fields
+            info.AddValue(field.Key, field.Value)
+        Next
+        Return surrogate.SetObjectData(Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject(type), info,
+            New StreamingContext(StreamingContextStates.All), Nothing)
+    End Function
 
+    ' Writer-only surrogate record identities retained for on-disk compatibility.
+    ' CompatibleDataFormatter reads these as data; their callbacks are not used.
     <Serializable>
     Private Class GlobalizationRecord(Of T)
         Implements ISerializable, IObjectReference

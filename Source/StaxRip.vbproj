@@ -130,6 +130,11 @@
     <Compile Include="General\StaxRipUpdate.vb" />
     <Compile Include="General\Test.vb" />
     <Compile Include="General\ToolUpdate.vb" />
+    <Compile Include="General\HttpFileDownload.vb" />
+    <Compile Include="General\ToolDirectoryTransaction.vb" />
+    <Compile Include="General\EncoderShellCommand.vb" />
+    <Compile Include="General\CompatibleDataFormatter.vb" />
+    <Compile Include="General\CustomCultureInfo.vb" />
     <Compile Include="Video\VideoRenderer.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -544,6 +549,7 @@
     <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.6.6" />
     <PackageReference Include="System.Management" Version="10.0.12" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.12" />
+    <PackageReference Include="System.Formats.Nrbf" Version="10.0.12" />
     <PackageReference Include="System.Runtime.Serialization.Formatters" Version="10.0.12" />
     <PackageReference Include="System.Resources.Extensions" Version="10.0.12" />
   </ItemGroup>

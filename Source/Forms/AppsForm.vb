@@ -723,6 +723,7 @@ Public Class AppsForm
                                 ToolUpdate.Extract()
                             Else
                                 ToolUpdate = New ToolUpdate(CurrentPackage, Me)
+                                ToolUpdate.DownloadFile = files(0)
                                 ToolUpdate.ExtractDir = Path.Combine(Folder.Temp, Guid.NewGuid.ToString())
                                 Directory.CreateDirectory(ToolUpdate.ExtractDir)
 
@@ -730,7 +731,7 @@ Public Class AppsForm
                                     FileHelp.Copy(i, Path.Combine(ToolUpdate.ExtractDir, i.FileName))
                                 Next
 
-                                ToolUpdate.DeleteOldFiles()
+                                ToolUpdate.InstallExtractedFiles()
                                 FolderHelp.Delete(ToolUpdate.ExtractDir)
                             End If
                         End If
