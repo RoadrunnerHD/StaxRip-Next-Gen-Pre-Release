@@ -80,6 +80,24 @@ Public NotInheritable Class CompatibleDataFormatter
                 Return result
             End If
             If type.IsEnum Then Return [Enum].ToObject(type, Restore(data.GetRawValue("value__"), depth + 1))
+            If type Is GetType(Version) Then
+                ' Framework settings contain System.Version. Restore through
+                ' its validated public constructors instead of runtime fields.
+                Dim major = VersionComponent(data, "Major")
+                Dim minor = VersionComponent(data, "Minor")
+                Dim build = VersionComponent(data, "Build")
+                Dim revision = VersionComponent(data, "Revision")
+                Dim result As Version
+                If revision >= 0 Then
+                    result = New Version(major, minor, build, revision)
+                ElseIf build >= 0 Then
+                    result = New Version(major, minor, build)
+                Else
+                    result = New Version(major, minor)
+                End If
+                restored(record.Id) = result
+                Return result
+            End If
             If GetType(IDictionary).IsAssignableFrom(type) Then
                 Dim comparer As Object = Nothing
                 If data.HasMember("Comparer") Then comparer = RestoreComparer(data.GetRawValue("Comparer"), type.GetGenericArguments()(0), depth + 1)
@@ -124,6 +142,13 @@ Public NotInheritable Class CompatibleDataFormatter
             End If
             restored(record.Id) = instance
             Return instance
+        End Function
+
+        Private Shared Function VersionComponent(data As ClassRecord, component As String) As Integer
+            For Each name In {"_" & component, component, "_" & component.ToLowerInvariant(), component.ToLowerInvariant()}
+                If data.HasMember(name) Then Return Convert.ToInt32(data.GetRawValue(name), CultureInfo.InvariantCulture)
+            Next
+            Throw New SerializationException("Stored version is missing component: " & component)
         End Function
 
         Private Function RestoreComparer(value As Object, keyType As Type, depth As Integer) As Object
@@ -218,7 +243,8 @@ Public NotInheritable Class CompatibleDataFormatter
         Private Shared Function IsApproved(type As Type) As Boolean
             If type.IsArray Then Return type.GetArrayRank() = 1 AndAlso IsApproved(type.GetElementType())
             If type.IsPrimitive OrElse type.IsEnum OrElse type Is GetType(String) OrElse type Is GetType(Object) OrElse
-                type Is GetType(Decimal) OrElse type Is GetType(DateTime) OrElse type Is GetType(TimeSpan) OrElse type Is GetType(Text.StringBuilder) Then Return True
+                type Is GetType(Decimal) OrElse type Is GetType(DateTime) OrElse type Is GetType(TimeSpan) OrElse
+                type Is GetType(Version) OrElse type Is GetType(Text.StringBuilder) Then Return True
             If GetType([Delegate]).IsAssignableFrom(type) Then Return False
             If IsGlobalization(type) Then Return True
             If type.IsGenericType Then

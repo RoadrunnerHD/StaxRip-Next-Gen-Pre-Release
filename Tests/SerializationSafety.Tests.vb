@@ -13,6 +13,17 @@ Module SerializationSafetyTests
         Require(copy.Name = sample.Name AndAlso copy.Items.Count = 3 AndAlso copy.Items(1) Is Nothing, "Application fields and lists failed.")
         Require(copy Is copy.Next, "References and cycles failed.")
         Require(Sample.Callbacks = 0, "Serialized callbacks must never execute.")
+        Require(CopyOf(New StringPairList From {"filter", "profile"}).Count = 2, "Inherited application list roundtrip failed.")
+        For Each version In {New Version(1, 2), New Version(1, 2, 3), New Version(1, 2, 3, 4)}
+            Require(CopyOf(version).Equals(version), "Version component roundtrip failed.")
+        Next
+        Using stream As New MemoryStream()
+            Dim writer = SerializationCompatibility.CreateWriter()
+            writer.Binder = New LegacyVersionBinder()
+            writer.Serialize(stream, New Version(4, 3, 2, 1))
+            stream.Position = 0
+            Require(DirectCast(formatter.Deserialize(stream), Version).Equals(New Version(4, 3, 2, 1)), "Framework Version import failed.")
+        End Using
         Require(CopyOf(Color.FromArgb(255, 20, 30, 40)).ToArgb() = Color.FromArgb(255, 20, 30, 40).ToArgb(), "Color failed.")
         Require(CopyOf(New Dictionary(Of String, Integer) From {{"test", 42}})("test") = 42, "Dictionary failed.")
         Dim insensitive = CopyOf(New Dictionary(Of String, Integer)(StringComparer.OrdinalIgnoreCase) From {{"Case", 42}})
@@ -82,6 +93,19 @@ Module SerializationSafetyTests
         End Try
         Throw New Exception(description & " must be rejected.")
     End Sub
+
+    Private Class LegacyVersionBinder
+        Inherits SerializationBinder
+        Public Overrides Sub BindToName(serializedType As Type, ByRef assemblyName As String, ByRef typeName As String)
+            If serializedType Is GetType(Version) Then
+                assemblyName = "mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
+                typeName = "System.Version"
+            End If
+        End Sub
+        Public Overrides Function BindToType(assemblyName As String, typeName As String) As Type
+            Throw New NotSupportedException("The test binder is only used for writing.")
+        End Function
+    End Class
 
     Private Class RemappedTypeBinder
         Inherits SerializationBinder

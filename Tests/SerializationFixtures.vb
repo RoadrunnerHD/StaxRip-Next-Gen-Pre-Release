@@ -14,3 +14,8 @@ Namespace Global.System.Drawing
         Bold = 1
     End Enum
 End Namespace
+
+<Serializable>
+Public Class StringPairList
+    Inherits System.Collections.Generic.List(Of String)
+End Class
