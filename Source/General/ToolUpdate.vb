@@ -12,7 +12,7 @@ Public Class ToolUpdate
     Property TargetDir As String
     Property UseCurl As Boolean
 
-    Private HttpClient As New HttpClient
+    Private HttpClient As HttpClient = SecureHttp.CreateClient()
     Private UpdateUI As IUpdateUI
 
     Sub New(pack As Package, updateUI As IUpdateUI)
@@ -23,7 +23,10 @@ Public Class ToolUpdate
 
     Async Sub Update()
         Try
-            Dim content = Await HttpClient.GetStringAsync(Package.DownloadURL)
+            Dim content As String
+            Using response = Await SecureHttp.GetAsync(HttpClient, Package.DownloadURL, Threading.CancellationToken.None)
+                content = Await response.Content.ReadAsStringAsync()
+            End Using
             Dim matches = Regex.Matches(content, "href=(""|')[^ ]+\.(7z|zip|exe)(""|')")
 
             For Each match As Match In matches

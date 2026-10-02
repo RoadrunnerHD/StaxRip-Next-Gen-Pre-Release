@@ -164,7 +164,8 @@ Public Class Package
         .Required = False,
         .IsIncluded = False,
         .WebURL = "http://haali.su/mkv",
-        .DownloadURL = "http://haali.su/mkv",
+        .DownloadURL = "",
+        .SupportsAutoUpdate = False,
         .Locations = {Registry.ClassesRoot.GetString("CLSID\" + GUIDS.HaaliMuxer.ToString + "\InprocServer32", Nothing).Dir}})
 
     Shared Property NicAudio As Package = Add(New PluginPackage With {
@@ -1288,7 +1289,7 @@ Public Class Package
         .Description = "Enhanced Edge Directed Interpolation implemented in CUDA Enhanced Edge Directed Interpolation implemented in CUDA.",
         .WebURL = "https://github.com/hooke007/VapourSynth-EEDI2CUDA",
         .HelpURL = "https://github.com/hooke007/VapourSynth-EEDI2CUDA/blob/main/README.md",
-        .DownloadURL = "http://avisynth.nl/index.php/EEDI2CUDA",
+        .DownloadURL = "https://github.com/hooke007/VapourSynth-EEDI2CUDA/releases",
         .RequirementsFunc = Function() Cuda.IsSupported,
         .AvsFilterNames = {"EEDI2_CUDA", "EEDI2_CUDA_AA2", "EEDI2_CUDA_Enlarge2"},
         .VsFilterNames = {"eedi2cuda.aa2", "eedi2cuda.EEDI2", "eedi2cuda.Enlarge2"}})
