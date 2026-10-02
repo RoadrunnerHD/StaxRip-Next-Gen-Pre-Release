@@ -9,4 +9,4 @@
 - [Community](Community.md)
 - [System Requirements](System-Requirements.md)
 - [Installation](Installation.md)
-- [Changelog](../../CHANGELOG.md)
+- [Changelog](../../NGCHANGELOG.md)
