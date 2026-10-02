@@ -6242,7 +6242,7 @@ Partial Public Class MainForm
         Dim currentVersion = New Version(ass.GetCustomAttribute(Of AssemblyFileVersionAttribute)().Version)
         If Not force AndAlso currentVersion.Minor >= 99 Then Exit Sub
 
-        Dim filepath = If(currentVersion.Major = 0, "StaxRip.NGCHANGELOG.md", If(g.IsSupporterRelease, "StaxRip.CHANGELOG-SUPPORTER.md", "StaxRip.CHANGELOG.md"))
+        Dim filepath = "StaxRip.NGCHANGELOG.md"
 
         Using stream = ass.GetManifestResourceStream(filepath)
             Using reader As New StreamReader(stream)
