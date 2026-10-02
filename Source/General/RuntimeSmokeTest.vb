@@ -12,6 +12,8 @@ Public Class RuntimeSmokeTest
             Dim scriptEncodingText = "LWLibavVideoSource(""Wahre Lügen – 日本語.mkv"")"
             scriptEncodingText.WriteFileProcessEncoding(scriptEncodingFile)
             Dim strictUtf8 As New UTF8Encoding(False, True)
+            Dim scriptBytes = IO.File.ReadAllBytes(scriptEncodingFile)
+            If Convert.ToBase64String(scriptBytes) <> Convert.ToBase64String(strictUtf8.GetBytes(scriptEncodingText)) Then Throw New Exception("Generated AviSynth script must be UTF-8 without BOM.")
             If IO.File.ReadAllText(scriptEncodingFile, strictUtf8) <> scriptEncodingText Then Throw New Exception("Generated AviSynth script is not valid UTF-8.")
             If scriptEncodingFile.ReadAllTextDefault() <> scriptEncodingText Then Throw New Exception("Script editor encoding roundtrip failed.")
             IO.File.Delete(scriptEncodingFile)

@@ -4529,7 +4529,15 @@ Public Class TextEncoding
     Private Shared Function GetACP() As UInteger
     End Function
 
-    Shared Property EncodingOfProcess As Encoding = Encoding.GetEncoding(CInt(GetACP()))
+    Shared Property EncodingOfProcess As Encoding = GetProcessEncoding()
+
+    Private Shared Function GetProcessEncoding() As Encoding
+        Dim codePage = CInt(GetACP())
+        ' AviSynth rejects UTF-8 scripts with a BOM.
+        If codePage = 65001 Then Return New UTF8Encoding(False)
+        Return Encoding.GetEncoding(codePage)
+    End Function
+
     Shared Property CodePageOfProcess As Integer = EncodingOfProcess.CodePage
     Shared Property CodePageOfSystem As Integer = Registry.LocalMachine.GetString("SYSTEM\CurrentControlSet\Control\Nls\CodePage", "ACP").ToInt
     Shared Property EncodingOfSystem As Encoding = Encoding.GetEncoding(CodePageOfSystem)
