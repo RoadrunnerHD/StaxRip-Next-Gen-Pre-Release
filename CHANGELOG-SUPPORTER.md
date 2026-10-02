@@ -1,31 +1,32 @@
-# StaxRip Next Gen — Current release notes
+# StaxRip Next Gen — Release information
 
-This file documents StaxRip Next Gen. Hardware video encoding uses Intel Quick Sync, NVIDIA and AMD. Software video encoders have been removed.
+The current NG pre-release combines hardware video encoding with video processing, audio processing and muxing in a portable Windows package.
 
-## v0.5.0-pre.2 (2026-10-02)
+## Capabilities at a glance
 
-Corrections included in this pre-release:
+| Area | What is available |
+| --- | --- |
+| Intel | Quick Sync hardware encoding through Rigaya QSVEncC |
+| NVIDIA | Hardware encoding through NVEncC |
+| AMD | Hardware encoding through VCEEncC |
+| Encoding controls | Encoder-specific quality, bitrate, bit depth and GOP settings |
+| Dimensions | Crop, resize and padding through supported encoder VPP |
+| Interlaced video | Intel Quick Sync normal, inverse-telecine and bob deinterlacing |
+| Image processing | Supported denoise, sharpen, deband and color adjustment filters |
+| Color and HDR | Source metadata import, VUI controls, color conversion, supported HDR-to-SDR tone mapping and HDR10/HDR10+/Dolby Vision metadata options |
+| Sources and preview | AviSynth+ and VapourSynth; direct QSV readers and ffmpeg pipe input options |
+| Audio and containers | Audio processing and muxing; elementary streams, MKV, MP4 and TS/M2TS where supported |
+| Workflow | Configurable projects and an encoding job list |
+| Deployment | Portable 64-bit Windows package with bundled .NET 10 runtime |
 
-- Fixed application startup in the portable package.
-- Corrected legacy settings import, including version values.
-- Restricted settings deserialization to supported data types, with resource limits and without invoking serialized callbacks or constructors.
-- Required HTTPS for downloads and validated redirects; rejected URL credentials and redirects to HTTP.
-- Added download cancellation and transactional file replacement so interrupted or incomplete downloads do not replace working files.
-- Hardened tool directory updates and project loading.
-- Corrected AviSynth script encoding to UTF-8 without a byte-order mark and addressed source paths containing non-ASCII characters.
-- Restored the missing resize menu entries.
-- Corrected displayed encoder commands so normal arguments and file paths are visible instead of internal literal placeholders.
-- Corrected bundled tool timestamps and version detection.
-- Updated the bundled 7-Zip components to 26.03 and corrected their version configuration.
-- Added file safety and serialization regression checks to the build.
-- Corrected the Windows TLS certificate handling in the file safety tests.
+Software video encoders have been removed. Available codecs and filters depend on the selected encoder, GPU, driver and input format. Encoder-side VPP and script preview can use different processing paths.
 
-Repository maintenance:
+## Current release: v0.5.0-pre.2 (2026-10-02)
 
-- Added SECURITY.md with guidance for reporting vulnerabilities and handling untrusted projects and scripts.
-- Pinned the build workflow actions to full commit hashes and kept workflow permissions read-only.
-- Corrected the release tag to match the corresponding source code.
+This release includes corrections for portable startup, legacy settings import, AviSynth UTF-8 script encoding and Unicode paths, missing resize menu entries, encoder command display, bundled tool timestamps and version detection, and 7-Zip 26.03 configuration.
 
-These changes do not constitute a guarantee that the application or every bundled tool is free of vulnerabilities. Encoder and filter availability continues to depend on the selected hardware, driver and tools.
+Settings loading, HTTPS downloads, redirect handling, interrupted downloads, tool updates and project loading were hardened. File safety and serialization regression checks are included in the build, and the Windows TLS test certificate handling was corrected.
 
-These notes describe the current NG pre-release. This file does not announce a separate supporter build. The complete NG development history is maintained in [NGCHANGELOG.md](NGCHANGELOG.md).
+For the detailed changes, see [CHANGELOG.md](CHANGELOG.md). The NG development history is in [NGCHANGELOG.md](NGCHANGELOG.md).
+
+This file describes the current NG release and does not announce a separate supporter edition.

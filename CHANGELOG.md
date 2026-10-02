@@ -1,6 +1,46 @@
-# StaxRip Next Gen — Changelog
+# StaxRip Next Gen — Features and release notes
 
-This file documents StaxRip Next Gen. Hardware video encoding uses Intel Quick Sync, NVIDIA and AMD. Software video encoders have been removed.
+## v0.5.0-pre.2 — What the program can do
+
+StaxRip Next Gen is a portable Windows application for hardware video encoding, video processing, audio processing and muxing. It brings these steps together in one configurable workflow.
+
+### Hardware video encoding
+
+- **Intel Quick Sync:** QSVEncC by Rigaya.
+- **NVIDIA:** NVEncC.
+- **AMD:** VCEEncC.
+- Encoder-specific quality, bitrate, bit depth and GOP settings.
+- Hardware codec availability depends on the GPU, graphics driver and selected encoder. Software video encoders have been removed.
+
+### Video processing / VPP
+
+- Crop, resize and padding to prepare output dimensions and borders.
+- Intel Quick Sync deinterlacing, including normal, inverse-telecine and bob modes.
+- Denoising, sharpening, debanding, brightness, contrast, saturation and gamma adjustments through supported encoder filters.
+- Color matrix, primaries, transfer and range conversion.
+- HDR-to-SDR tone mapping, including supported Libplacebo options.
+- Encoder-side VPP settings are passed separately from the preview script; the preview can therefore differ from the encoded result.
+
+### Sources, preview and HDR
+
+- AviSynth+ and VapourSynth source decoding, indexing, script processing and preview.
+- Direct QSV readers and ffmpeg pipe inputs through the encoder decoder settings.
+- Import of source color metadata and explicit VUI settings for SDR/HDR workflows.
+- Automatic QSV color options resolved from source metadata for script and pipe inputs.
+- HDR10, HDR10+ and Dolby Vision metadata controls where supported by the selected encoder and tools.
+
+### Audio, output and jobs
+
+- Audio processing and muxing with the included tools.
+- Elementary video streams, MKV, MP4 and TS/M2TS output, depending on the selected encoder, muxer and stream formats.
+- Configurable projects and a job list for preparing multiple encoding tasks.
+
+### Portable Windows package
+
+- Bundled .NET 10 Windows desktop runtime; no separate .NET installation is needed for StaxRipNG.
+- Launch `StaxRipNG.exe` from the main folder after extracting the complete package.
+- Keep `Apps`, `Fonts`, `Icons` and `Runtime` beside the launcher.
+- Requires 64-bit Windows, compatible hardware and drivers, and any Visual C++ runtime libraries required by the included tools.
 
 ## v0.5.0-pre.2 (2026-10-02)
 
