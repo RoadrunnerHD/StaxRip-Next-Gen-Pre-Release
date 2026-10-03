@@ -24,6 +24,9 @@ Copy-Item (Join-Path $source 'bin\FrameServer.dll') (Join-Path $publish 'FrameSe
 Copy-Item (Join-Path $source 'Launcher\bin\StaxRipNG.exe') (Join-Path $publish 'StaxRipNG.exe') -Force
 Copy-Item (Join-Path $PSScriptRoot 'License.txt') $publish -Force
 Copy-Item (Join-Path $PSScriptRoot 'README.md') $publish -Force
+$dvOffsetDir = Join-Path $publish 'Apps\Support\DVOffset'
+New-Item -ItemType Directory -Path $dvOffsetDir -Force | Out-Null
+Copy-Item (Join-Path $PSScriptRoot 'Tools\DVOffset\scale_rpu.py') $dvOffsetDir -Force
 $runtimeConfig = Get-Content (Join-Path $runtime 'StaxRipNG.runtimeconfig.json') -Raw | ConvertFrom-Json
 if ($runtimeConfig.runtimeOptions.tfm -ne 'net10.0') { throw 'Unexpected runtime target.' }
 foreach ($file in @('coreclr.dll','System.Windows.Forms.dll')) {
