@@ -1055,6 +1055,17 @@ Partial Public Class MainForm
         CommandManager.AddCommandsFromObject(Me)
         CommandManager.AddCommandsFromObject(g.DefaultCommands)
 
+        If s.CustomMenuMainForm IsNot Nothing AndAlso
+            Not s.CustomMenuMainForm.GetAllItems().Any(Function(item) item.MethodName = NameOf(StartDVOffset)) Then
+            s.CustomMenuMainForm.Add("Tools|DV Offset", NameOf(StartDVOffset), Symbol.DVOffset)
+        End If
+
+        If s.CustomMenuMainForm IsNot Nothing Then
+            For Each item In s.CustomMenuMainForm.GetAllItems().Where(Function(entry) entry.MethodName = NameOf(StartDVOffset))
+                item.Symbol = Symbol.DVOffset
+            Next
+        End If
+
         CustomMainMenu = New CustomMenu(AddressOf GetDefaultMainMenu, s.CustomMenuMainForm, CommandManager, MenuStrip)
 
 
@@ -3983,6 +3994,30 @@ Partial Public Class MainForm
         p.VideoEncoder.RunCompCheck()
     End Sub
 
+    <Command("Starts the DV Offset Python patch.")>
+    Sub StartDVOffset()
+        If Not Package.Python.VerifyOK(True) OrElse Not Package.DoViTool.VerifyOK(True) Then Return
+        Dim scriptPath = Path.Combine(Folder.Startup, "Apps", "Support", "DVOffset", "scale_rpu.py")
+        If Not File.Exists(scriptPath) Then
+            MsgWarn("DV Offset script is missing: " & scriptPath)
+            Return
+        End If
+        Try
+            Dim info As New ProcessStartInfo With {
+                .FileName = Package.Python.Path,
+                .UseShellExecute = False,
+                .CreateNoWindow = False,
+                .WorkingDirectory = Folder.Startup
+            }
+            info.ArgumentList.Add(scriptPath)
+            info.ArgumentList.Add(Package.DoViTool.Path)
+            Using child As Process = Process.Start(info)
+            End Using
+        Catch ex As Exception
+            g.ShowException(ex)
+        End Try
+    End Sub
+
     <Command("Launches a new instance of StaxRip.")>
     Sub StartNewInstance()
         Using p As New Process()
@@ -4514,6 +4549,7 @@ Partial Public Class MainForm
         ret.Add("Project|-")
         ret.Add("Project|Options", NameOf(ShowOptionsDialog), Keys.F9, Symbol.Project)
 
+        ret.Add("Tools|DV Offset", NameOf(StartDVOffset), Symbol.DVOffset)
         ret.Add("Tools|Jobs...", NameOf(ShowJobsDialog), Keys.F6, Symbol.MultiSelectLegacy)
         ret.Add("Tools|Folders", Symbol.Library)
         ret.Add("Tools|Folders|Log Files", NameOf(g.DefaultCommands.OpenFolder), {$"%settings_dir%{IO.Path.DirectorySeparatorChar}Log Files"})
@@ -6253,7 +6289,7 @@ Partial Public Class MainForm
         Dim currentVersion = New Version(ass.GetCustomAttribute(Of AssemblyFileVersionAttribute)().Version)
         If Not force AndAlso currentVersion.Minor >= 99 Then Exit Sub
 
-        Dim filepath = "StaxRip.NGCHANGELOG.md"
+        Dim filepath = If(currentVersion.Major = 0, "StaxRip.NGCHANGELOG.md", If(g.IsSupporterRelease, "StaxRip.CHANGELOG-SUPPORTER.md", "StaxRip.CHANGELOG.md"))
 
         Using stream = ass.GetManifestResourceStream(filepath)
             Using reader As New StreamReader(stream)
