@@ -19,7 +19,7 @@ The intended image dimensions are **3840×2160, 1920×1080 and 1280×720**. All 
 3. Drag the HEVC file into the console window and press **Enter**.
 4. Check the newly created HEVC file containing the adjusted Dolby Vision RPU.
 
-This tool is intended exclusively for **Dolby Vision material with matching Level 5 metadata**. At the final deletion prompt, enter **n** to keep both the input file and the JSON file.
+This tool is intended exclusively for **Dolby Vision material with matching Level 5 metadata**. At the final deletion prompt, only the L5 JSON file and the unmodified input HEVC file are deleted if you confirm. The newly created HEVC file with the adjusted RPU is retained. Enter **n** to keep all files.
 
 ---
 
