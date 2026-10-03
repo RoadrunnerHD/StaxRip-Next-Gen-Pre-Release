@@ -38,3 +38,5 @@ Application startup, AviSynth and VapourSynth source loading, resize menu entrie
 The former 0.28/0.29 archive comparison has been replaced by this current release overview. Its archive sizes and file counts do not describe the current pre-release.
 
 See [NGCHANGELOG.md](NGCHANGELOG.md) for the NG development history and [SECURITY.md](SECURITY.md) for vulnerability reporting.
+
+The additional `HDRDVmetadata_L5.json` is created only for Dolby Vision sources with available Level 5 metadata. SDR and HDR sources without Dolby Vision do not create a new JSON file.

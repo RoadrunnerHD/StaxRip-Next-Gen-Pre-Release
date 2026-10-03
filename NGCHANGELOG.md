@@ -3,6 +3,7 @@
 ## v0.5.0-pre.3 (2026-10-03)
 
 - When a Dolby Vision source is loaded and its Level 5 JSON is available, an additional `HDRDVmetadata_L5.json` copy is created one directory above the project temp folder.
+- This additional copy is created only for Dolby Vision sources with available Level 5 metadata. SDR and HDR sources without Dolby Vision do not create a new JSON file.
 - The original JSON and all existing processing inside the temp folder remain unchanged.
 - The additional copy is replaced only after a complete copy succeeds. Copy failures are reported in the log and do not stop source loading.
 
