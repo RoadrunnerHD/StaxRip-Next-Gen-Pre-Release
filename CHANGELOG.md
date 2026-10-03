@@ -14,7 +14,7 @@ The intended image dimensions are **3840×2160, 1920×1080 and 1280×720**. All 
 
 ### How to use
 
-1. Place the corresponding **HDRDVmetadata_L5.json** beside the already downscaled HEVC file.
+1. For Dolby Vision material with available Level 5 metadata, StaxRip automatically creates **HDRDVmetadata_L5.json** one directory above the project temp folder. Keep the downscaled HEVC file in that same folder. No manual copying of the JSON file is required.
 2. Open **Tools → DV Offset**.
 3. Drag the HEVC file into the console window and press **Enter**.
 4. Check the newly created HEVC file containing the adjusted Dolby Vision RPU.
