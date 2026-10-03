@@ -1,6 +1,12 @@
 # StaxRip Next Gen — Features and release notes
 
-## v0.5.0-pre.2 — What the program can do
+## v0.5.0-pre.3 (2026-10-03)
+
+- When a Dolby Vision source is loaded and its Level 5 JSON is available, an additional `HDRDVmetadata_L5.json` copy is created one directory above the project temp folder.
+- The original JSON and all existing processing inside the temp folder remain unchanged.
+- The additional copy is replaced only after a complete copy succeeds. Copy failures are reported in the log and do not stop source loading.
+
+## v0.5.0-pre.3 — What the program can do
 
 StaxRip Next Gen is a portable Windows application for hardware video encoding, video processing, audio processing and muxing. It brings these steps together in one configurable workflow.
 

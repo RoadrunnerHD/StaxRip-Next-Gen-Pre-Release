@@ -5,6 +5,8 @@ if ($LASTEXITCODE -ne 0) { throw 'Serialization safety tests failed.' }
 if ($LASTEXITCODE -ne 0) { throw 'File safety tests failed.' }
 & dotnet run --project (Join-Path $PSScriptRoot 'Tests\QsvColorMetadata.Tests.vbproj') --configuration Release
 if ($LASTEXITCODE -ne 0) { throw 'QSV color metadata regression tests failed.' }
+& dotnet run --project (Join-Path $PSScriptRoot 'Tests\DolbyVisionLevel5Copy.Tests.vbproj') --configuration Release
+if ($LASTEXITCODE -ne 0) { throw 'Dolby Vision Level 5 copy tests failed.' }
 $source = Join-Path $PSScriptRoot 'Source'
 $publish = Join-Path $source 'publish-net10'
 $runtime = Join-Path $publish 'Runtime'

@@ -1,5 +1,11 @@
 # StaxRip Next Gen — Changelog
 
+## v0.5.0-pre.3 (2026-10-03)
+
+- When a Dolby Vision source is loaded and its Level 5 JSON is available, an additional `HDRDVmetadata_L5.json` copy is created one directory above the project temp folder.
+- The original JSON and all existing processing inside the temp folder remain unchanged.
+- The additional copy is replaced only after a complete copy succeeds. Copy failures are reported in the log and do not stop source loading.
+
 This file documents StaxRip Next Gen. Hardware video encoding uses Intel Quick Sync, NVIDIA and AMD. Software video encoders have been removed.
 
 ## v0.5.0-pre.2 (2026-10-02)

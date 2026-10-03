@@ -1,5 +1,11 @@
 # StaxRip Next Gen — Release information
 
+## v0.5.0-pre.3 (2026-10-03)
+
+- When a Dolby Vision source is loaded and its Level 5 JSON is available, an additional `HDRDVmetadata_L5.json` copy is created one directory above the project temp folder.
+- The original JSON and all existing processing inside the temp folder remain unchanged.
+- The additional copy is replaced only after a complete copy succeeds. Copy failures are reported in the log and do not stop source loading.
+
 The current NG pre-release combines hardware video encoding with video processing, audio processing and muxing in a portable Windows package.
 
 ## Capabilities at a glance
@@ -21,9 +27,9 @@ The current NG pre-release combines hardware video encoding with video processin
 
 Software video encoders have been removed. Available codecs and filters depend on the selected encoder, GPU, driver and input format. Encoder-side VPP and script preview can use different processing paths.
 
-## Current release: v0.5.0-pre.2 (2026-10-02)
+## Previous release: v0.5.0-pre.2 (2026-10-02)
 
-This release includes corrections for portable startup, legacy settings import, AviSynth UTF-8 script encoding and Unicode paths, missing resize menu entries, encoder command display, bundled tool timestamps and version detection, and 7-Zip 26.03 configuration.
+The previous release includes corrections for portable startup, legacy settings import, AviSynth UTF-8 script encoding and Unicode paths, missing resize menu entries, encoder command display, bundled tool timestamps and version detection, and 7-Zip 26.03 configuration.
 
 Settings loading, HTTPS downloads, redirect handling, interrupted downloads, tool updates and project loading were hardened. File safety and serialization regression checks are included in the build, and the Windows TLS test certificate handling was corrected.
 

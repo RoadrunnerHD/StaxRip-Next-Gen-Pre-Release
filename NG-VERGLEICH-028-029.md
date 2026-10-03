@@ -1,6 +1,6 @@
 # StaxRip Next Gen — Current release status
 
-Updated: 2026-10-02. Release: **v0.5.0-pre.2**.
+Updated: 2026-10-03. Release: **v0.5.0-pre.3**.
 
 ## Encoding and processing
 
@@ -14,7 +14,11 @@ Updated: 2026-10-02. Release: **v0.5.0-pre.2**.
 | Software video encoders | Removed |
 | Deployment | Portable Windows package with bundled .NET 10 runtime |
 
-## Corrections in this release
+## New in v0.5.0-pre.3
+
+- Creates an additional `HDRDVmetadata_L5.json` one directory above the project temp folder when Dolby Vision Level 5 metadata is available. The temp folder and its processing remain unchanged.
+
+## Corrections retained from v0.5.0-pre.2
 
 - Portable startup and legacy settings import corrected.
 - AviSynth scripts written as UTF-8 without BOM; non-ASCII source paths handled.
@@ -31,6 +35,6 @@ Updated: 2026-10-02. Release: **v0.5.0-pre.2**.
 
 Application startup, AviSynth and VapourSynth source loading, resize menu entries and tool status were checked during the release preparation. These checks do not cover every GPU, driver, input format or bundled third-party binary.
 
-The former 0.28/0.29 archive comparison has been replaced by this current release overview. Its archive sizes and file counts do not describe v0.5.0-pre.2.
+The former 0.28/0.29 archive comparison has been replaced by this current release overview. Its archive sizes and file counts do not describe the current pre-release.
 
 See [NGCHANGELOG.md](NGCHANGELOG.md) for the NG development history and [SECURITY.md](SECURITY.md) for vulnerability reporting.
