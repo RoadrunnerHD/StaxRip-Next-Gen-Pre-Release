@@ -2772,6 +2772,17 @@ Partial Public Class MainForm
                 End Select
             End If
 
+            If p.SourceVideoHdrFormat.StartsWith("DV", StringComparison.Ordinal) Then
+                Try
+                    Dim level5Copy = DolbyVisionLevel5Copy.CopyToParent(p.TempDir, p.HdrDolbyVisionMetadataFile?.Level5JsonFilePath)
+                    If level5Copy IsNot Nothing Then Log.WriteLine($"Additional Dolby Vision Level 5 metadata copy: {level5Copy}")
+                Catch ex As IOException
+                    Log.WriteLine($"WARNING: Could not copy Dolby Vision Level 5 metadata above the temp folder: {ex.Message}")
+                Catch ex As UnauthorizedAccessException
+                    Log.WriteLine($"WARNING: Could not copy Dolby Vision Level 5 metadata above the temp folder: {ex.Message}")
+                End Try
+            End If
+
             p.VideoEncoder.SetMetaData(p.LastOriginalSourceFile)
 
             If p.LastOriginalSourceFile <> p.SourceFile AndAlso Not FileTypes.VideoText.Contains(p.SourceFile.Ext) Then
