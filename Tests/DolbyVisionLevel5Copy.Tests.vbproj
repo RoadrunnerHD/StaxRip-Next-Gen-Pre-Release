@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>StaxRip</RootNamespace>
+    <OptionStrict>On</OptionStrict>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../Source/General/DolbyVisionLevel5Copy.vb" Link="DolbyVisionLevel5Copy.vb" />
+    <Compile Include="DolbyVisionLevel5Copy.Tests.vb" />
+  </ItemGroup>
+</Project>
