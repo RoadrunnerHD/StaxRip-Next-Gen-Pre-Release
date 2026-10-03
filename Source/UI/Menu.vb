@@ -328,7 +328,11 @@ Namespace UI
                         mi.ShortcutKeyDisplayString = keys
                     End If
 
-                    If cmi.Symbol <> Symbol.None Then
+                    If cmi.MethodName = "StartDVOffset" Then
+                        cmi.Symbol = Symbol.DVOffset
+                        mi.ImageScaling = ToolStripItemImageScaling.None
+                        mi.Image = ImageHelp.GetSymbolImage(Symbol.DVOffset)
+                    ElseIf cmi.Symbol <> Symbol.None Then
                         mi.ImageScaling = ToolStripItemImageScaling.None
                         mi.SetImage(cmi.Symbol)
                     End If

@@ -20,6 +20,28 @@ Public Class ImageHelp
         Optional color As Color = Nothing,
         Optional fontSize As Integer = 12) As Image
 
+        If symbol = Symbol.DVOffset Then
+            color = If(color = Nothing, ThemeManager.CurrentTheme.General.Controls.ToolStrip.SymbolImageColor.ToColor(), color)
+            Dim side As Integer
+            Using sizeReference = GetSymbolImage(Symbol.MultiSelectLegacy, color, fontSize)
+                side = If(sizeReference Is Nothing, CInt(fontSize * 1.5F), sizeReference.Width)
+            End Using
+            Dim dvBitmap As New Bitmap(side, side)
+            Using graphics As Graphics = Graphics.FromImage(dvBitmap)
+                graphics.SmoothingMode = SmoothingMode.AntiAlias
+                graphics.ScaleTransform(side / 18.0F, side / 18.0F)
+                Using pen As New Pen(color, 1.25F),
+                    letterD As New GraphicsPath()
+                    graphics.DrawRectangle(pen, 1, 2, 16, 14)
+                    letterD.AddLine(3, 5, 3, 13)
+                    letterD.AddBezier(3, 13, 10, 13, 10, 5, 3, 5)
+                    graphics.DrawPath(pen, letterD)
+                    graphics.DrawLines(pen, {New PointF(10, 5), New PointF(12.5F, 13), New PointF(15, 5)})
+                End Using
+            End Using
+            Return dvBitmap
+        End If
+
         If Not FontFilesExist Then
             Return Nothing
         End If
