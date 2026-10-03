@@ -42,6 +42,7 @@
     <Import Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="General\DolbyVisionLevel5Copy.vb" />
     <Compile Include="Controls\NVEncControl.vb">
       <SubType>UserControl</SubType>
     </Compile>
