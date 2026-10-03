@@ -2341,6 +2341,7 @@ End Class
 
 Public Enum Symbol
     None = 0
+    DVOffset = -1
     [Error] = &HE783
     [Like] = &HE8E1
     [Next] = &HE893
