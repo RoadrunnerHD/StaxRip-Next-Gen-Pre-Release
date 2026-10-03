@@ -10,7 +10,7 @@ The intended image dimensions are **3840×2160, 1920×1080 and 1280×720**. All 
 
 **Cropped or trimmed image dimensions are not supported.** The full frame, including any existing black bars, must be preserved. Cropping changes the reference points of the active-area offsets.
 
-**Current script note:** The script uses a fixed scale factor of **0.5** for **3840×2160 → 1920×1080**. An output of **1280×720** requires the appropriate scale factor for the source resolution.
+**Current script note:** The script uses a fixed scale factor of **0.5** for **3840×2160 → 1920×1080**.
 
 ### How to use
 
