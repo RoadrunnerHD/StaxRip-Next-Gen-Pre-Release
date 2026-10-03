@@ -1,3 +1,28 @@
+## DV Offset – Adjusting Dolby Vision Level 5 metadata
+
+**Tools → DV Offset** launches the Python tool for adjusting the **Level 5 active-area offsets in the Dolby Vision RPU**. These values describe the distances from the full image edges to the active picture, for example where black bars are present.
+
+When a video is downscaled, these pixel values must also be scaled by the appropriate ratio. The tool reads **HDRDVmetadata_L5.json**, scales the offsets and injects the adjusted RPU into a new HEVC file. It does not resize or re-encode the video itself.
+
+### Image dimensions and requirements
+
+The intended image dimensions are **3840×2160, 1920×1080 and 1280×720**. All three resolutions use a **16:9** aspect ratio, allowing the width and height to be scaled uniformly.
+
+**Cropped or trimmed image dimensions are not supported.** The full frame, including any existing black bars, must be preserved. Cropping changes the reference points of the active-area offsets.
+
+**Current script note:** The script uses a fixed scale factor of **0.5** for **3840×2160 → 1920×1080**. An output of **1280×720** requires the appropriate scale factor for the source resolution.
+
+### How to use
+
+1. Place the corresponding **HDRDVmetadata_L5.json** beside the already downscaled HEVC file.
+2. Open **Tools → DV Offset**.
+3. Drag the HEVC file into the console window and press **Enter**.
+4. Check the newly created HEVC file containing the adjusted Dolby Vision RPU.
+
+This tool is intended exclusively for **Dolby Vision material with matching Level 5 metadata**. At the final deletion prompt, enter **n** to keep both the input file and the JSON file.
+
+---
+
 # StaxRip Next Gen — Features and release notes
 
 ## v0.5.0-pre.3 (2026-10-03)
