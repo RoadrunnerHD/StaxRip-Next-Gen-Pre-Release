@@ -1,0 +1,138 @@
+
+[Source]
+Automatic = # can be configured at: Tools > Settings > Source Filters
+AVISource = clip = core.avisource.AVISource(r"%source_file%")
+
+BestSource =
+    tcFile = r"%temp_file%_timestamps.txt" # timestamps file path
+    # BestSource R22: use its supported decoder options; obsolete hwdevice/extrahwframes arguments were removed.
+    clip = core.bs.VideoSource(r"%source_file%", track=-1, fpsnum=-1, fpsden=1, rff=False, threads=0, seekpreroll=20, enable_drefs=False, use_absolute_path=False, cachemode=3, cachepath=r"%source_temp_file%", cachesize=1000, timecodes=tcFile) if os.path.exists(tcFile) else core.bs.VideoSource(r"%source_file%", track=-1, fpsnum=-1, fpsden=1, rff=False, threads=0, seekpreroll=20, enable_drefs=False, use_absolute_path=False, cachemode=3, cachepath=r"%source_temp_file%", cachesize=1000)
+
+d2vSource = clip = core.d2v.Source(r"%source_file%")
+
+ffms2 =
+    tcFile = r"%temp_file%_timestamps.txt" # timestamps file path
+    clip = core.ffms2.Source(r"%source_file%", cachefile=r"%source_temp_file%.ffindex", timecodes=tcFile) if os.path.exists(tcFile) else core.ffms2.Source(r"%source_file%", cachefile=r"%source_temp_file%.ffindex")
+
+LibavSMASHSource = clip = core.lsmas.LibavSMASHSource(r"%source_file%")
+LWLibavSource = clip = core.lsmas.LWLibavSource(r"%source_file%", cachefile=r"%source_temp_file%.lwi")
+Manual = # shows filter selection dialog
+MPEG2Source = clip = core.dgdecode.MPEG2Source(r"%source_file%")
+
+[Crop]
+Hardware Encoder = # hardware encoder crops
+
+
+[Resize]
+Advanced | Hardware Encoder = # hardware encoder resizes
+
+
+[QSV VPP | 01 Deinterlace und IVTC]
+afs = # NGVPP --vpp-afs
+bwdif = # NGVPP --vpp-bwdif
+deint csp = # NGVPP --vpp-deint-csp $enter_text:QSVEncC Parameter fuer --vpp-deint-csp$
+deinterlace = # NGVPP --vpp-deinterlace $select:Deinterlace-Modus;normal;normal_tff;normal_bff;it;it_tff;it_bff;bob;bob_tff;bob_bff$
+ivtc = # NGVPP --vpp-ivtc
+kfm = # NGVPP --vpp-kfm
+nnedi = # NGVPP --vpp-nnedi
+nnedi upscale = # NGVPP --vpp-nnedi-upscale
+onnx deint = # NGVPP --vpp-onnx-deint
+rff = # NGVPP --vpp-rff
+rtgmc = # NGVPP --vpp-rtgmc
+rtgmc bob = # NGVPP --vpp-rtgmc-bob
+rtgmc edi = # NGVPP --vpp-rtgmc-edi
+rtgmc primitive = # NGVPP --vpp-rtgmc-primitive
+rtgmc retouch = # NGVPP --vpp-rtgmc-retouch
+rtgmc search prefilter = # NGVPP --vpp-rtgmc-search-prefilter
+rtgmc shimmer repair = # NGVPP --vpp-rtgmc-shimmer-repair
+vinverse = # NGVPP --vpp-vinverse
+yadif = # NGVPP --vpp-yadif
+
+
+[QSV VPP | 02 Rauschfilter]
+bm3d = # NGVPP --vpp-bm3d
+convolution3d = # NGVPP --vpp-convolution3d
+deblock = # NGVPP --vpp-deblock
+degrain = # NGVPP --vpp-degrain
+denoise = # NGVPP --vpp-denoise $enter_text:Staerke als ganze Zahl fuer --vpp-denoise$
+denoise dct = # NGVPP --vpp-denoise-dct
+fft3d = # NGVPP --vpp-fft3d
+guidedfilter = # NGVPP --vpp-guidedfilter
+hqdn3d = # NGVPP --vpp-hqdn3d
+knn = # NGVPP --vpp-knn
+mctf = # NGVPP --vpp-mctf
+msmooth = # NGVPP --vpp-msmooth
+nlmeans = # NGVPP --vpp-nlmeans
+pmd = # NGVPP --vpp-pmd
+smooth = # NGVPP --vpp-smooth
+
+
+[QSV VPP | 03 Schaerfe und Kanten]
+cas = # NGVPP --vpp-cas
+dehalo = # NGVPP --vpp-dehalo
+detail enhance = # NGVPP --vpp-detail-enhance $enter_text:Staerke als ganze Zahl fuer --vpp-detail-enhance$
+detailsharpen = # NGVPP --vpp-detailsharpen
+edgelevel = # NGVPP --vpp-edgelevel
+finedehalo = # NGVPP --vpp-finedehalo
+hqdering = # NGVPP --vpp-hqdering
+maa = # NGVPP --vpp-maa
+msharpen = # NGVPP --vpp-msharpen
+unsharp = # NGVPP --vpp-unsharp
+warpsharp = # NGVPP --vpp-warpsharp
+
+
+[QSV VPP | 04 Farbe und Tonemapping]
+clahe = # NGVPP --vpp-clahe
+colorfix = # NGVPP --vpp-colorfix
+colorspace = # NGVPP --vpp-colorspace $enter_text:QSVEncC Parameter fuer --vpp-colorspace$
+curves = # NGVPP --vpp-curves
+deband = # NGVPP --vpp-deband
+libplacebo deband = # NGVPP --vpp-libplacebo-deband
+libplacebo tonemapping = # NGVPP --vpp-libplacebo-tonemapping $enter_text:QSVEncC Parameter fuer --vpp-libplacebo-tonemapping$
+libplacebo tonemapping lut = # NGVPP --vpp-libplacebo-tonemapping-lut $enter_text:QSVEncC Parameter fuer --vpp-libplacebo-tonemapping-lut$
+softlight = # NGVPP --vpp-softlight
+tweak = # NGVPP --vpp-tweak
+
+
+[QSV VPP | 05 Groesse und Geometrie]
+chromashift = # NGVPP --vpp-chromashift
+descale = # NGVPP --vpp-descale
+lenscorrection = # NGVPP --vpp-lenscorrection
+mirror = # NGVPP --vpp-mirror
+pad = # NGVPP --vpp-pad $enter_text:Pad-Abstaende links,oben,rechts,unten; zum Beispiel 0,20,0,22$
+resize = # NGVPP --vpp-resize $enter_text:QSVEncC Resize-Parameter, zum Beispiel algo=auto$
+resize mode = # NGVPP --vpp-resize-mode $enter_text:QSVEncC Parameter fuer --vpp-resize-mode$
+rotate = # NGVPP --vpp-rotate $select:Drehung;90;180;270$
+transform = # NGVPP --vpp-transform
+v360 = # NGVPP --vpp-v360
+
+
+[QSV VPP | 06 Bildrate und Bewegung]
+ai frameinterp = # NGVPP --vpp-ai-frameinterp
+decimate = # NGVPP --vpp-decimate
+fps conv = # NGVPP --vpp-fps-conv $enter_text:QSVEncC Parameter fuer --vpp-fps-conv$
+fruc = # NGVPP --vpp-fruc
+mpdecimate = # NGVPP --vpp-mpdecimate
+rife ov = # NGVPP --vpp-rife-ov
+select every = # NGVPP --vpp-select-every $enter_text:QSVEncC Parameter fuer --vpp-select-every$
+
+
+[QSV VPP | 07 Weitere VPP-Funktionen]
+anime4k shader = # NGVPP --vpp-anime4k-shader
+decomb = # NGVPP --vpp-decomb
+deflicker = # NGVPP --vpp-deflicker
+dehaze = # NGVPP --vpp-dehaze
+delogo = # NGVPP --vpp-delogo $enter_text:QSVEncC Parameter fuer --vpp-delogo$
+delogo select = # NGVPP --vpp-delogo-select $enter_text:QSVEncC Parameter fuer --vpp-delogo-select$
+image stab = # NGVPP --vpp-image-stab $enter_text:QSVEncC Parameter fuer --vpp-image-stab$
+libplacebo shader = # NGVPP --vpp-libplacebo-shader $enter_text:QSVEncC Parameter fuer --vpp-libplacebo-shader$
+mfx insert clcopy = # NGVPP --vpp-mfx-insert-clcopy
+onnx = # NGVPP --vpp-onnx $enter_text:QSVEncC Parameter fuer --vpp-onnx$
+onnx cache dir = # NGVPP --vpp-onnx-cache-dir $enter_text:QSVEncC Parameter fuer --vpp-onnx-cache-dir$
+onnx model dir = # NGVPP --vpp-onnx-model-dir $enter_text:QSVEncC Parameter fuer --vpp-onnx-model-dir$
+order = # NGVPP --vpp-order $enter_text:QSVEncC Parameter fuer --vpp-order$
+overlay = # NGVPP --vpp-overlay
+perc pre enc = # NGVPP --vpp-perc-pre-enc
+perf monitor = # NGVPP --vpp-perf-monitor
+stab = # NGVPP --vpp-stab
+subburn = # NGVPP --vpp-subburn $enter_text:QSVEncC Parameter fuer --vpp-subburn$

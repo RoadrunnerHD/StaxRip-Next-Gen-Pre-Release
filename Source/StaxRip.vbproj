@@ -1,0 +1,502 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RuntimeFrameworkVersion>10.0.12</RuntimeFrameworkVersion>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <DisableImplicitNamespaceImports>true</DisableImplicitNamespaceImports>
+    <UseWindowsForms>true</UseWindowsForms>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>StaxRipNG</AssemblyName>
+    <RootNamespace>StaxRip</RootNamespace>
+    <StartupObject>Sub Main</StartupObject>
+    <MyType>WindowsFormsWithCustomSubMain</MyType>
+    <ApplicationIcon>Black.ico</ApplicationIcon>
+    <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <PlatformTarget>x64</PlatformTarget>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>false</PublishSingleFile>
+    <PublishTrimmed>false</PublishTrimmed>
+    <OptionCompare>Binary</OptionCompare>
+    <OptionExplicit>On</OptionExplicit>
+    <OptionStrict>On</OptionStrict>
+    <OptionInfer>On</OptionInfer>
+    <EnableUnsafeBinaryFormatterSerialization>true</EnableUnsafeBinaryFormatterSerialization>
+    <NoWarn>SYSLIB0011;SYSLIB0050;NU1701;WFO1000</NoWarn>
+    <OutputPath>bin/net10/</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
+  </PropertyGroup>
+  <ItemGroup>
+    <Import Include="System" />
+    <Import Include="System.Collections" />
+    <Import Include="System.Collections.Generic" />
+    <Import Include="System.Data" />
+    <Import Include="System.Diagnostics" />
+    <Import Include="System.Drawing" />
+    <Import Include="System.IO" />
+    <Import Include="System.Linq" />
+    <Import Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Controls\NVEncControl.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\PreprocessingControl.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Encoding\VCEEnc.vb" />
+    <Compile Include="Encoding\QSVEnc.vb" />
+    <Compile Include="Encoding\NVEnc.vb" />
+    <Compile Include="Forms\DownloadForm.Designer.vb">
+      <DependentUpon>DownloadForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\DownloadForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\LogForm.Designer.vb">
+      <DependentUpon>LogForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\LogForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CodeForm.Designer.vb">
+      <DependentUpon>CodeForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\CodeForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MainForm_Assistant.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MainForm_ShowOptions.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MainForm_ShowSettings.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\FontManager.vb" />
+    <Compile Include="General\AsyncStreamReader.vb" />
+    <Compile Include="General\Documentation.vb" />
+    <Compile Include="General\DolbyVisionLevel5Copy.vb" />
+    <Compile Include="General\DolbyVisionMetadataFile.vb" />
+    <Compile Include="General\Extras.vb" />
+    <Compile Include="General\Thumbnailer.vb" />
+    <Compile Include="Video\FrameServer.vb" />
+    <Compile Include="General\JobManager.vb" />
+    <Compile Include="General\LogBuilder.vb" />
+    <Compile Include="General\GlobalClass.vb" />
+    <Compile Include="General\GlobalCommands.vb" />
+    <Compile Include="General\Macro.vb" />
+    <Compile Include="General\Mathf.vb" />
+    <Compile Include="General\PowerShell.vb" />
+    <Compile Include="General\ProcController.vb" />
+    <Compile Include="General\StaxRipUpdate.vb" />
+    <Compile Include="General\Test.vb" />
+    <Compile Include="General\ToolUpdate.vb" />
+    <Compile Include="General\HttpFileDownload.vb" />
+    <Compile Include="General\ToolDirectoryTransaction.vb" />
+    <Compile Include="General\EncoderShellCommand.vb" />
+    <Compile Include="General\CompatibleDataFormatter.vb" />
+    <Compile Include="General\CustomCultureInfo.vb" />
+    <Compile Include="Video\VideoRenderer.vb" />
+    <Compile Include="My Project\Application.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Application.myapp</DependentUpon>
+    </Compile>
+    <Compile Include="My Project\Resources.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="UI\CheckBoxRendererEx.vb" />
+    <Compile Include="UI\ColorHSL.vb" />
+    <Compile Include="UI\DataForm.Designer.vb">
+      <DependentUpon>DataForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="UI\DataForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CodeEditor.Designer.vb">
+      <DependentUpon>CodeEditor.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\CodeEditor.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\StreamDemuxForm.Designer.vb">
+      <DependentUpon>StreamDemuxForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\StreamDemuxForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\VideoComparisonForm.Designer.vb">
+      <DependentUpon>VideoComparisonForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\VideoComparisonForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SimpleSettingsForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\eac3toForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="General\Extensions.vb" />
+    <Compile Include="Forms\AudioForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CommandLineDemuxForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\HelpForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\FiltersListView.vb">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\CommandLineControl.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\MacroEditorControl.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\MacrosForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\TestForm.Designer.vb">
+      <DependentUpon>TestForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\TestForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CommandLineForm.Designer.vb">
+      <DependentUpon>CommandLineForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\CommandLineForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="General\Audio.vb" />
+    <Compile Include="Video\VideoEncoderCommandLine.vb" />
+    <Compile Include="UI\ImageUtils.vb" />
+    <Compile Include="UI\Controls\ListViewEx.vb">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\SimpleUI.vb">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\SearchTextBox.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Dynamic.vb" />
+    <Compile Include="Forms\CommandLineVideoEncoderForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\EventCommandEditor.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\EventCommandsEditor.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MacroEditorDialog.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MuxerForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="General\ApplicationSettings.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="General\AudioProfile.vb" />
+    <Compile Include="Video\VideoScript.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="General\Help.vb" />
+    <Compile Include="General\MediaInfo.vb">
+    </Compile>
+    <Compile Include="General\General.vb" />
+    <Compile Include="General\SerializationCompatibility.vb" />
+    <Compile Include="General\RuntimeSmokeTest.vb" />
+    <Compile Include="General\QsvColorMetadata.vb" />
+    <Compile Include="General\Proc.vb" />
+    <Compile Include="General\Native.vb" />
+    <Compile Include="Forms\CommandLineAudioEncoderForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CropForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\JobsForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MainForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AppsForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\PreviewForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ProfilesForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SourceFilesForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="General\Muxer.vb" />
+    <Compile Include="My Project\AssemblyInfo.vb" />
+    <Compile Include="General\ToolVersionDetection.vb" />
+    <Compile Include="General\Package.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="General\Demux.vb" />
+    <Compile Include="Forms\ProcessingForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="General\Project.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Encoding\VideoEncoder.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="General\Misc.vb">
+    </Compile>
+    <Compile Include="UI\Controls\Controls.vb">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\Criteria\Criteria.vb" />
+    <Compile Include="UI\Criteria\CriteriaControl.vb">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\Criteria\CriteriaItemControl.Designer.vb">
+      <DependentUpon>CriteriaItemControl.vb</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Criteria\CriteriaItemControl.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\CustomMenuEditor.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\ExtenderProviders.vb">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\FolderBrowserDialog.vb">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\HSLColor.vb" />
+    <Compile Include="UI\Menu.vb" />
+    <Compile Include="UI\MenuTemplateForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Misc.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\SelectionBox.vb" />
+    <Compile Include="UI\StockIcon.vb" />
+    <Compile Include="UI\StringEditorForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\TaskDialog.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\TaskDialogBaseForm.Designer.vb">
+      <DependentUpon>TaskDialogBaseForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="UI\TaskDialogBaseForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Templates\DialogTemplate.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Theme.vb" />
+    <Compile Include="UI\ThemeManager.vb" />
+    <Compile Include="UI\TipProvider.vb">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\ToolStripRendererEx.vb" />
+    <Compile Include="UI\UI Help.vb" />
+    <Content Include="DirectN.ico" />
+    <Content Include="DirectN.png" />
+    <EmbeddedResource Include="Video\AviSynthFilterProfileDefaults.txt" />
+    <EmbeddedResource Include="Video\VapourSynthFilterProfileDefaults.txt" />
+    <EmbeddedResource Include="..\NGCHANGELOG.md">
+      <Link>NGCHANGELOG.md</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\TaskDialogBaseForm.resx">
+      <DependentUpon>TaskDialogBaseForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\CHANGELOG.md">
+      <Link>CHANGELOG.md</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\CHANGELOG-SUPPORTER.md">
+      <Link>CHANGELOG-SUPPORTER.md</Link>
+    </EmbeddedResource>
+    <None Include="..\README.md">
+      <Link>README.md</Link>
+    </None>
+    <None Include="bin\Apps\Icons\Black.ico" />
+    <None Include="..\License.txt">
+      <Link>License.txt</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Content Include="Black.ico" />
+    <None Include="My Project\Application.myapp">
+      <Generator>MyApplicationCodeGenerator</Generator>
+      <LastGenOutput>Application.Designer.vb</LastGenOutput>
+    </None>
+    <None Include="packages.config" />
+    <None Include="Resources\arrow.png" />
+    <None Include="Resources\X.png" />
+    <None Include="Resources\Right3.png" />
+    <None Include="Resources\Right2.png" />
+    <None Include="Resources\Right1.png" />
+    <None Include="Resources\Left3.png" />
+    <None Include="Resources\Left2.png" />
+    <None Include="Resources\Left1.png" />
+    <None Include="Resources\BracketOpen.png" />
+    <None Include="Resources\BracketClose.png" />
+    <EmbeddedResource Include="Controls\CommandLineControl.resx">
+      <DependentUpon>CommandLineControl.vb</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\MacroEditorControl.resx">
+      <DependentUpon>MacroEditorControl.vb</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\PreprocessingControl.resx">
+      <DependentUpon>PreprocessingControl.vb</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\AppsForm.resx">
+      <DependentUpon>AppsForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\AudioForm.resx">
+      <DependentUpon>AudioForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\DownloadForm.resx">
+      <DependentUpon>DownloadForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\LogForm.resx">
+      <DependentUpon>LogForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\CodeForm.resx">
+      <DependentUpon>CodeForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\DataForm.resx">
+      <DependentUpon>DataForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\CodeEditor.resx">
+      <DependentUpon>CodeEditor.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\StreamDemuxForm.resx">
+      <DependentUpon>StreamDemuxForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\VideoComparisonForm.resx">
+      <DependentUpon>VideoComparisonForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SimpleSettingsForm.resx">
+      <DependentUpon>SimpleSettingsForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\CommandLineAudioEncoderForm.resx">
+      <DependentUpon>CommandLineAudioEncoderForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\CommandLineVideoEncoderForm.resx">
+      <DependentUpon>CommandLineVideoEncoderForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\CropForm.resx">
+      <DependentUpon>CropForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\CommandLineDemuxForm.resx">
+      <DependentUpon>CommandLineDemuxForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\eac3toForm.resx">
+      <DependentUpon>eac3toForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\EventCommandEditor.resx">
+      <DependentUpon>EventCommandEditor.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\EventCommandsEditor.resx">
+      <DependentUpon>EventCommandsEditor.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\HelpForm.resx">
+      <DependentUpon>HelpForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\JobsForm.resx">
+      <DependentUpon>JobsForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MacroEditorDialog.resx">
+      <DependentUpon>MacroEditorDialog.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MainForm.resx">
+      <DependentUpon>MainForm.vb</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MuxerForm.resx">
+      <DependentUpon>MuxerForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\PreviewForm.resx">
+      <DependentUpon>PreviewForm.vb</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ProcessingForm.resx">
+      <DependentUpon>ProcessingForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ProfilesForm.resx">
+      <DependentUpon>ProfilesForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SourceFilesForm.resx">
+      <DependentUpon>SourceFilesForm.vb</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MacrosForm.resx">
+      <DependentUpon>MacrosForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\TestForm.resx">
+      <DependentUpon>TestForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\CommandLineForm.resx">
+      <DependentUpon>CommandLineForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My Project\Resources.resx">
+      <CustomToolNamespace>My.Resources</CustomToolNamespace>
+      <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.vb</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Controls\SearchTextBox.resx">
+      <DependentUpon>SearchTextBox.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Criteria\CriteriaControl.resx">
+      <DependentUpon>CriteriaControl.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Criteria\CriteriaItemControl.resx">
+      <DependentUpon>CriteriaItemControl.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\CustomMenuEditor.resx">
+      <DependentUpon>CustomMenuEditor.vb</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\MenuTemplateForm.resx">
+      <DependentUpon>MenuTemplateForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Misc.resx">
+      <DependentUpon>Misc.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\StringEditorForm.resx">
+      <DependentUpon>StringEditorForm.vb</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="DirectN" Version="1.5.0" />
+    <PackageReference Include="ManagedCuda-100" Version="10.0.31" />
+    <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.6.6" />
+    <PackageReference Include="System.Management" Version="10.0.12" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.12" />
+    <PackageReference Include="System.Formats.Nrbf" Version="10.0.12" />
+    <PackageReference Include="System.Runtime.Serialization.Formatters" Version="10.0.12" />
+    <PackageReference Include="System.Resources.Extensions" Version="10.0.12" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,71 @@
+# [Documentation](../README.md) / Usage
+
+Here you get information about different controls, features and such. I try to explain what they do, what they might trigger
+and cause, so basically the technical part, which gives you the knowledge to understand everything
+so you can use StaxRip and its settings correctly.
+
+- [First Start](First-Start.md)
+- [User Interface](User-Interface/README.md)
+    - [Main Window](User-Interface/Main.md)
+        - [Main Menu](User-Interface/Main.md#main-menu)
+        - [Source](User-Interface/Main.md#source)
+        - [Target](User-Interface/Main.md#target)
+        - [Filter](User-Interface/Main.md#filter)
+        - [Resize](User-Interface/Main.md#resize)
+        - [Encoder/Container](User-Interface/Main.md#encodercontainer)
+        - [Audio](User-Interface/Main.md#audio)
+        - [Assistant](User-Interface/Main.md#assistant)
+    - Open Video Source File(s)
+        - eac3to Demuxing
+    - [Template Selection](User-Interface/Template-Selection.md)
+    - [Save Template](User-Interface/Save-Template.md)
+    - Crop
+    - Code Editor
+    - [Filter Profiles](User-Interface/Filter-Profiles.md)
+    - Encoder Options
+    - Container Options
+    - Audio Settings
+    - Preview
+    - Video Comparison
+    - Jobs
+    - Menu Editor
+    - Events
+    - Log File Viewer
+    - Apps Manager
+    - Project Options
+    - [Settings](User-Interface/Settings.md)
+        - [General](User-Interface/Settings.md#general)
+        - [Logs](User-Interface/Settings.md#logs)
+        - [Startup](User-Interface/Settings.md#startup)
+        - [Source Opening](User-Interface/Settings.md#source-opening)
+        - [Quality Definitions](User-Interface/Settings.md#quality-definitions)
+        - [Generation](User-Interface/Settings.md#generation)
+        - [System](User-Interface/Settings.md#system)
+        - [User Interface](User-Interface/Settings.md#user-interface)
+        - [Frame Server](User-Interface/Settings.md#frameserver)
+        - [Preprocessing](User-Interface/Settings.md#preprocessing)
+        - [Source Filters](User-Interface/Settings.md#source-filters)
+        - [Danger Zone](User-Interface/Settings.md#danger-zone)
+- Frame Servers
+- Cropping
+- [Workflow](Workflow.md)
+- [Fonts](Fonts.md)
+- Events
+- [Macros](Macros.md)
+    - [Global Macros](Macros.md#global-macros)
+    - [Parameter Included Macros](Macros.md#parameter-included-macros)
+    - [Interactive Macros](Macros.md#interactive-macros)
+    - [Special Macros](Macros.md#special-macros)
+        - [Encoder Macros](Macros.md#encoder-macros)
+        - [While Processing Macros](Macros.md#while-processing-macros)
+    - [Function Macros](Macros.md#function-macros)
+    - [Appendix](Macros.md#appendix)
+        - [Appendix A: DataColumn Expression Syntax](Macros.md#appendix-a-datacolumn-expression-syntax)
+- [Commands](Commands.md)
+- [Command Line Interface](Command-Line-Interface.md)
+- Filter Profiles
+- PowerShell Scripting
+- Long Path Support
+- Useful Links
+- Outdated external documentations
+    - [encodingwissen.de](https://encodingwissen.de/praxis/staxrip) (German)

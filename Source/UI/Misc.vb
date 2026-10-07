@@ -1,0 +1,440 @@
+﻿
+Imports System.ComponentModel
+Imports System.Drawing.Design
+
+Namespace UI
+    Public Class FormBase
+        Inherits Form
+
+        Event FilesDropped(files As String())
+
+        Private FileDropValue As Boolean
+        Private DefaultWidthScale As Single
+        Private DefaultHeightScale As Single
+        Protected SaveAndLoadSize As Boolean = True
+
+        <DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
+        Shadows Property FontHeight As Integer
+
+        Sub New()
+            Font = FontManager.GetDefaultFont()
+            FontHeight = Font.Height
+        End Sub
+
+        <DefaultValue(False)>
+        Property FileDrop As Boolean
+            Get
+                Return FileDropValue
+            End Get
+            Set(value As Boolean)
+                FileDropValue = value
+                AllowDrop = value
+            End Set
+        End Property
+
+        ReadOnly Property IsDisposingOrDisposed As Boolean
+            Get
+                Try
+                    Return Disposing OrElse IsDisposed
+                Catch
+                    Return True
+                End Try
+            End Get
+        End Property
+
+        <DefaultValue(True)>
+        Property IsComposited As Boolean = True
+
+        Protected Overrides ReadOnly Property CreateParams() As CreateParams
+            Get
+                Dim ret = MyBase.CreateParams
+
+                If Not DesignHelp.IsDesignMode AndAlso IsComposited Then
+                    ret.ExStyle = ret.ExStyle Or &H2000000 'WS_EX_COMPOSITED
+                End If
+
+                Return ret
+            End Get
+        End Property
+
+        Protected Overrides Sub OnActivated(e As EventArgs)
+            MyBase.OnActivated(e)
+            g.ActiveForm = Me
+        End Sub
+
+        Protected Overrides Sub OnDragEnter(e As DragEventArgs)
+            MyBase.OnDragEnter(e)
+
+            If FileDrop Then
+                Dim files = TryCast(e.Data.GetData(DataFormats.FileDrop), String())
+
+                If Not files.NothingOrEmpty Then
+                    e.Effect = DragDropEffects.Copy
+                End If
+            End If
+        End Sub
+
+        Protected Overrides Sub OnDragDrop(args As DragEventArgs)
+            MyBase.OnDragDrop(args)
+
+            If FileDrop Then
+                Dim files = TryCast(args.Data.GetData(DataFormats.FileDrop), String())
+
+                If Not files.NothingOrEmpty Then
+                    RaiseEvent FilesDropped(files)
+                End If
+            End If
+        End Sub
+
+        Protected Overrides Sub OnHandleCreated(e As EventArgs)
+            MyBase.OnHandleCreated(e)
+
+            If Not ThemeManager.CurrentTheme.UsesSystemColors Then
+                If Native.DwmSetWindowAttribute(Handle, 19, 1, 4) <> 0 Then Native.DwmSetWindowAttribute(Handle, 20, 1, 4)
+            End If
+        End Sub
+
+        Sub SetMaximumSize(w As Single, h As Single)
+            MaximumSize = New Size(CInt(Font.Height * w), CInt(Font.Height * h ))
+        End Sub
+
+        Sub SetMinimumSize(w As Single, h As Single)
+            MinimumSize = New Size(CInt(Font.Height * w), CInt(Font.Height * h ))
+        End Sub
+
+        Protected Overrides Sub OnLoad(args As EventArgs)
+            If Not DesignHelp.IsDesignMode Then
+                KeyPreview = True
+            End If
+
+            SetTabIndexes(Me)
+
+            If s.UIScaleFactor <> 1 Then
+                Scale(New SizeF(1 * s.UIScaleFactor, 1 * s.UIScaleFactor))
+            End If
+
+            If DefaultWidthScale <> 0 Then
+                Dim defaultWidth = CInt(Font.Height * DefaultWidthScale * ((s.UIScaleFactor - 1) / 1.5 + 1))
+                Dim defaultHeight = CInt(Font.Height * DefaultHeightScale * ((s.UIScaleFactor - 1) / 1.5 + 1))
+
+                Dim w = 0
+                Dim h = 0
+
+                If SaveAndLoadSize Then
+                    w = s.Storage.GetInt(Me.GetType().Name + "width")
+                    h = s.Storage.GetInt(Me.GetType().Name + "height")
+                End If
+
+                Dim workingArea = Screen.FromControl(Me).WorkingArea
+
+                If w = 0 OrElse w < (defaultWidth / 2) OrElse h = 0 OrElse h < (defaultHeight / 2) Then
+                    w = defaultWidth
+                    h = defaultHeight
+                End If
+
+                If w > workingArea.Width OrElse h > workingArea.Height Then
+                    w = workingArea.Width
+                    h = workingArea.Height
+                End If
+
+                Width = w
+                Height = h
+            End If
+
+            If StartPosition = FormStartPosition.CenterScreen Then
+                CenterScreen
+            End If
+
+            If Not DesignHelp.IsDesignMode Then
+                If Not (ModifierKeys.HasFlag(Keys.Control Or Keys.Shift)) Then
+                    s.WindowPositions?.RestorePosition(Me)
+                End If
+            End If
+
+            MyBase.OnLoad(args)
+        End Sub
+
+        Protected Overrides Sub OnFormClosing(args As FormClosingEventArgs)
+            MyBase.OnFormClosing(args)
+
+            If s.WindowPositions IsNot Nothing Then
+                s.WindowPositions.Save(Me)
+            End If
+
+            If SaveAndLoadSize AndAlso DefaultWidthScale <> 0 Then
+                SaveClientSize()
+            End If
+        End Sub
+
+        Sub SetTabIndexes(c As Control)
+            Dim index = 0
+
+            Dim controls = From i In c.Controls.OfType(Of Control)()
+                           Order By Math.Sqrt(i.Top * i.Top + i.Left * i.Left)
+
+            For Each i In controls
+                i.TabIndex = index
+                index += 1
+                SetTabIndexes(i)
+            Next
+        End Sub
+
+        Sub RestoreClientSize(defaultWidthScale As Single, defaultHeightScale As Single)
+            Me.DefaultWidthScale = defaultWidthScale
+            Me.DefaultHeightScale = defaultHeightScale
+        End Sub
+
+        Sub SaveClientSize()
+            s.Storage.SetInt(Me.GetType().Name + "width", Width)
+            s.Storage.SetInt(Me.GetType().Name + "height", Height)
+        End Sub
+    End Class
+
+    Public Class DialogBase
+        Inherits FormBase
+
+        Sub New()
+            FormBorderStyle = FormBorderStyle.FixedDialog
+            HelpButton = True
+            MaximizeBox = False
+            MinimizeBox = False
+            SaveAndLoadSize = False
+            ShowIcon = False
+            ShowInTaskbar = False
+            StartPosition = FormStartPosition.CenterParent
+        End Sub
+
+        Protected Overrides Sub OnHelpButtonClicked(args As CancelEventArgs)
+            MyBase.OnHelpButtonClicked(args)
+            args.Cancel = True
+            OnHelpRequested(New HelpEventArgs(MousePosition))
+        End Sub
+    End Class
+
+    Public Class SizeSavingDialogBase
+        Inherits DialogBase
+
+        Sub New()
+            MyBase.New()
+            SaveAndLoadSize = True
+            FormBorderStyle = FormBorderStyle.Sizable
+        End Sub
+    End Class
+
+    Public Class ListBag(Of T)
+        Implements IComparable(Of ListBag(Of T))
+
+        Property Text As String
+        Property Value As T
+
+        Sub New(text As String, value As T)
+            Me.Text = text
+            Me.Value = value
+        End Sub
+
+        Shared Sub SelectItem(cb As ComboBox, value As T)
+            Dim selectItem As Object = Nothing
+
+            For Each i As ListBag(Of T) In cb.Items
+                If i.Value.Equals(value) Then selectItem = i
+            Next
+
+            If Not selectItem Is Nothing Then cb.SelectedItem = selectItem
+        End Sub
+
+        Shared Function GetValue(cb As ComboBox) As T
+            Return DirectCast(DirectCast(cb.SelectedItem, ListBag(Of T)).Value, T)
+        End Function
+
+        Shared Function GetBagsForEnumType() As ListBag(Of T)()
+            Dim ret As New List(Of ListBag(Of T))
+
+            For Each i As T In System.Enum.GetValues(GetType(T))
+                ret.Add(New ListBag(Of T)(DispNameAttribute.GetValueForEnum(i), i))
+            Next
+
+            Return ret.ToArray
+        End Function
+
+        Overrides Function ToString() As String
+            Return Text
+        End Function
+
+        Function CompareTo(other As ListBag(Of T)) As Integer Implements IComparable(Of ListBag(Of T)).CompareTo
+            Return Text.CompareTo(other.Text)
+        End Function
+    End Class
+
+    <Serializable()>
+    Public Class WindowPositions
+        Public Positions As New Dictionary(Of String, Point)
+        Private WindowStates As New Dictionary(Of String, FormWindowState)
+
+        Sub Save(form As Form)
+            SavePosition(form)
+            SaveWindowState(form)
+        End Sub
+
+        Sub SavePosition(form As Form)
+            If form.WindowState = FormWindowState.Normal Then
+                Positions(GetKey(form)) = form.Location
+            End If
+        End Sub
+
+        Sub SaveWindowState(form As Form)
+            WindowStates(GetKey(form)) = form.WindowState
+        End Sub
+
+        Sub RestorePositionInternal(form As Form)
+            If Positions.ContainsKey(GetKey(form)) Then
+                Dim pos = Positions(GetKey(form))
+                Dim rect = New Rectangle(pos, New Size(form.Width, form.Height))
+                Dim screens = Screen.AllScreens
+
+                If screens.Any(Function(scr) scr.WorkingArea.IntersectsWith(rect)) Then
+                    form.StartPosition = FormStartPosition.Manual
+                    form.Location = pos
+                    Return
+                Else
+                    form.CenterScreen()
+                End If
+            End If
+        End Sub
+
+        Sub RestorePosition(form As Form)
+            Dim text = GetText(form)
+
+            If Not s.WindowPositionsRemembered.NothingOrEmpty Then
+                For Each i In s.WindowPositionsRemembered
+                    If text.StartsWith(i) OrElse i.ToLowerInvariant() = "all" Then
+                        RestorePositionInternal(form)
+                        Exit For
+                    End If
+                Next
+            End If
+        End Sub
+
+        Function GetKey(form As Form) As String
+            Return $"{form.Name}_{form.GetType().FullName}_{GetText(form)}"
+        End Function
+
+        Function GetText(form As Form) As String
+            If TypeOf form Is HelpForm Then
+                Return "Help"
+            ElseIf TypeOf form Is JobsForm Then
+                Return "Jobs"
+            ElseIf TypeOf form Is MainForm Then
+                Return "StaxRip"
+            ElseIf TypeOf form Is PreviewForm Then
+                Return "Preview"
+            ElseIf TypeOf form Is ProcessingForm Then
+                Return "Processing"
+            End If
+
+            Dim text = form.Text.Replace(g.DefaultCommands.GetApplicationDetails(), "").Trim()
+            Return text
+        End Function
+    End Class
+
+    Public Class OpenFileDialogEditor
+        Inherits UITypeEditor
+
+        Overloads Overrides Function EditValue(context As ITypeDescriptorContext, provider As IServiceProvider, value As Object) As Object
+            Using f As New OpenFileDialog
+                If f.ShowDialog = DialogResult.OK Then
+                    Return f.FileName
+                Else
+                    Return value
+                End If
+            End Using
+        End Function
+
+        Overloads Overrides Function GetEditStyle(context As ITypeDescriptorContext) As UITypeEditorEditStyle
+            Return UITypeEditorEditStyle.Modal
+        End Function
+    End Class
+
+    Public Class StringEditor
+        Inherits UITypeEditor
+
+        Sub New()
+        End Sub
+
+        Overloads Overrides Function EditValue(context As ITypeDescriptorContext, provider As IServiceProvider, value As Object) As Object
+            Dim form As New StringEditorForm
+            form.rtb.Text = DirectCast(value, String)
+
+            If form.ShowDialog() = DialogResult.OK Then
+                Return form.rtb.Text
+            Else
+                Return value
+            End If
+        End Function
+
+        Overloads Overrides Function GetEditStyle(context As ITypeDescriptorContext) As UITypeEditorEditStyle
+            Return UITypeEditorEditStyle.Modal
+        End Function
+    End Class
+
+    Public Class DesignHelp
+        Private Shared IsDesignModeValue As Boolean?
+
+        Shared ReadOnly Property IsDesignMode As Boolean
+            Get
+                If Not IsDesignModeValue.HasValue Then
+                    IsDesignModeValue = Process.GetCurrentProcess.ProcessName = "devenv"
+                End If
+
+                Return IsDesignModeValue.Value
+            End Get
+        End Property
+    End Class
+
+    Public Class InputBox
+        Property Title As String
+        Property Text As String
+        Property Value As String
+        Property CheckBoxText As String
+        Property Checked As Boolean
+
+        Shared Function Show(title As String,
+                             Optional value As String = Nothing,
+                             Optional text As String = Nothing) As String
+
+            Dim box As New InputBox
+            box.Title = title
+            box.Text = text
+            box.Value = value
+
+            If box.Show = DialogResult.OK Then
+                Return box.Value
+            Else
+                Return Nothing
+            End If
+        End Function
+
+        Function Show() As DialogResult
+            Using td As New TaskDialog(Of DialogResult)
+                td.Title = Title
+                td.Content = Text
+                td.InputTextEdit.Visible = True
+                td.InputTextEdit.Text = Value
+                td.StartPosition = FormStartPosition.CenterParent
+                td.Buttons = TaskButton.OkCancel
+
+                If CheckBoxText <> "" Then
+                    td.CheckBox.Visible = True
+                    td.CheckBox.Checked = Checked
+                    td.CheckBox.Text = CheckBoxText
+                End If
+
+                If td.Show() = DialogResult.OK Then
+                    Checked = td.CheckBox.Checked
+                    Value = td.InputTextEdit.Text
+                End If
+
+                Return td.SelectedValue
+            End Using
+        End Function
+    End Class
+End Namespace

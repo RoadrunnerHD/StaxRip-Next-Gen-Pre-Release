@@ -1,0 +1,11 @@
+FFTW 3.3.11 Windows x64 build
+Source: https://www.fftw.org/fftw-3.3.11.tar.gz
+Compiler: MinGW-w64 GCC 13.2.0, win32 threads.
+Build each precision in a separate build directory.
+Common configure options:
+--host=x86_64-w64-mingw32 --enable-shared --disable-static --enable-threads --with-combined-threads --enable-portable-binary --with-our-malloc16 --with-windows-f77-mangling --disable-fortran
+Double: add --enable-sse2 --enable-avx --enable-avx2
+Float: add --enable-float --enable-sse2 --enable-avx --enable-avx2
+Long double: add --enable-long-double
+Set CC=x86_64-w64-mingw32-gcc-win32, then run configure and make.
+The three output DLLs are in .libs. Full corresponding source is included beside this file.
