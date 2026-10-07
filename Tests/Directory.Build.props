@@ -1,7 +1,0 @@
-<Project>
-  <PropertyGroup>
-    <!-- Each test executable needs its own generated apphost and restore data. -->
-    <BaseIntermediateOutputPath>obj/$(MSBuildProjectName)/</BaseIntermediateOutputPath>
-    <BaseOutputPath>bin/$(MSBuildProjectName)/</BaseOutputPath>
-  </PropertyGroup>
-</Project>
