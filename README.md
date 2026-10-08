@@ -1,4 +1,4 @@
-# StaxRip Next Gen Release 0.01
+# StaxRip Next Gen Release
 
 **Portable Windows application with bundled .NET 10.**
 
