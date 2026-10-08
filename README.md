@@ -6,7 +6,7 @@ StaxRip Next Gen focuses on hardware video encoding with Intel Quick Sync (QSVEn
 
 ## Download
 
-Download the program and the separate source archive from [Release 0.01](../../releases/tag/v0.01).
+Download the program and the separate source archive from [Release 0.02](../../releases/tag/v0.02).
 
 - **Program:** `StaxRip-Next-Gen-Release-0.01-Program.7z`
 - **Source code:** `StaxRip-Next-Gen-Release-0.01-Source.zip`
